@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+.pytest_cache/
+
+# Local data (your products live here)
+data/*.db
+data/*.db-journal
+data/*.sqlite3
+
+# Editors / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Secrets (none are needed, but just in case)
+.env
+.streamlit/secrets.toml

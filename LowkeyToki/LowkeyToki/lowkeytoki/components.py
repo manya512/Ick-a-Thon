@@ -18,25 +18,35 @@ def one_line(html: str) -> str:
 
 def top_bar(subtitle: str, ick_count: int) -> str:
     pill = (
-        '<span class="lt-fresh"><span class="lt-dot alert" style="background:#BA1A1A"></span>'
+        '<span class="lt-fresh" style="background:#ffdad6;color:#93000a"><span class="lt-dot alert" style="background:#ba1a1a"></span>'
         f"{ick_count} in the Ick Zone</span>"
         if ick_count
         else '<span class="lt-fresh"><span class="lt-dot"></span>Fresh</span>'
     )
+    avatar = (
+        '<img alt="Profile" style="width:34px;height:34px;border-radius:50%;object-fit:cover" '
+        'src="https://lh3.googleusercontent.com/aida/AEtjO1W_cmuwH4OaCSBD7tE2uCpCQKWV7mEbrsEpnxvCSI10cgARMsZYjGkPePRc6wlfAgUEHmSLkkFKKbFU4sSO6adliM7CorMkKjwLQAmV0qpvwUBoNYOLWkOmSM2LdZxZud-KYWhXWfZ6LbDPeyuG-QmKJP7Kox2fEREiz5J-_yYE9BN4Ea_05o1oK1gKT32dHNh9te5lWjZTP9HVeQAlbtEGakJ7WsWN2jfdR21V3pEiO8HVgdGk2DUkMYbTWejCG-cYvrd9nnMs"/>'
+    )
+    bell = (
+        '<div style="position:relative;width:36px;height:36px;display:flex;align-items:center;justify-content:center;border-radius:50%;background:#f2e5e3">'
+        '<span class="material-symbols-outlined" style="font-size:20px;color:#201a19">notifications</span>'
+        + ('<span style="position:absolute;top:6px;right:6px;width:8px;height:8px;border-radius:50%;background:#ba1a1a"></span>' if ick_count else '')
+        + '</div>'
+    )
     return one_line(
-        f'<div class="lt-top"><div class="lt-brand"><div class="lt-logo">🦠</div><div>'
+        f'<div class="lt-top"><div class="lt-brand"><div class="lt-logo">{avatar}</div><div>'
         f'<div class="lt-brand-name">LowkeyToki</div><div class="lt-brand-sub">{escape(subtitle)}</div>'
-        f"</div></div>{pill}</div>"
+        f'</div></div><div style="display:flex;align-items:center;gap:8px">{pill}{bell}</div></div>'
     )
 
 
 def stat_grid(stats: dict) -> str:
     return one_line(
         f"""<div class="lt-grid">
-        <div class="lt-stat"><div class="lbl">TOTAL INVENTORY</div><div><div class="num">{stats['total']}</div><div class="sub">items tracked</div></div></div>
-        <div class="lt-stat soon"><div class="lbl">EXPIRING SOON</div><div><div class="num">{stats[STATUS_SOON]}</div><div class="sub">next 72 hours</div></div></div>
-        <div class="lt-stat ick"><span class="ghost">🦠</span><div class="lbl">THE ICK ZONE</div><div><div class="num">{stats[STATUS_EXPIRED]}</div><div class="sub">{'Needs attention! 🦠' if stats[STATUS_EXPIRED] else 'All clear'}</div></div></div>
-        <div class="lt-stat fresh"><div class="lbl">FRESH &amp; SAFE</div><div><div class="num">{stats[STATUS_FRESH]}</div><div class="sub">happy &amp; chill</div></div></div>
+        <div class="lt-stat"><div style="display:flex;justify-content:space-between;align-items:center"><span class="lbl">TOTAL INVENTORY</span><span class="material-symbols-outlined" style="font-size:18px;color:#464838">inventory_2</span></div><div><div class="num">{stats['total']}</div><div class="sub">items tracked</div></div></div>
+        <div class="lt-stat soon"><div style="display:flex;justify-content:space-between;align-items:center"><span class="lbl">EXPIRING SOON</span><span class="material-symbols-outlined" style="font-size:18px;color:#493888">timer</span></div><div><div class="num">{stats[STATUS_SOON]}</div><div class="sub">next 72 hours</div></div></div>
+        <div class="lt-stat ick"><span class="ghost">🦠</span><div style="display:flex;justify-content:space-between;align-items:center"><span class="lbl">THE ICK ZONE</span><span class="material-symbols-outlined" style="font-size:18px;color:#ffdad6">warning</span></div><div><div class="num">{stats[STATUS_EXPIRED]}</div><div class="sub">{'Needs attention! 🦠' if stats[STATUS_EXPIRED] else 'All clear'}</div></div></div>
+        <div class="lt-stat fresh"><div style="display:flex;justify-content:space-between;align-items:center"><span class="lbl">FRESH &amp; SAFE</span><span class="material-symbols-outlined" style="font-size:18px;color:#566500">check_circle</span></div><div><div class="num">{stats[STATUS_FRESH]}</div><div class="sub">happy &amp; chill</div></div></div>
         </div>"""
     )
 

@@ -6,22 +6,26 @@ It tracks food, medicine, cosmetics/skincare, household products and anything el
 The UI follows the exported Google Stitch screens (Overview, Use First, Add Item, Products), plus a Categories page.
 Fonts: Quicksand (brand and headings) and DM Sans (everything else). Palette: cream, matcha, lilac, charcoal.
 
-## Run it (Windows, PowerShell or the VS Code / Antigravity terminal)
+## Run the App
 
-You need Python 3.10 or newer (`python --version`).
+### Option 1: Pixel-Perfect Google Stitch UI (Instant, 0 dependencies!)
+
+Runs immediately with Python's standard library:
 
 ```powershell
-cd LowkeyToki
-python -m venv .venv
-.venv\Scripts\Activate.ps1
+python server.py
+```
+Open **http://localhost:8000** in your browser!
+
+You can also simply double-click or open `index.html` directly in any web browser.
+
+### Option 2: Streamlit App
+
+```powershell
 pip install -r requirements.txt
 streamlit run app.py
 ```
-
-Your browser opens at http://localhost:8501.
-
-- If PowerShell blocks activation, run `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned` once, or use `.venv\Scripts\activate.bat` in Command Prompt.
-- macOS/Linux: `source .venv/bin/activate` instead of the Activate.ps1 line.
+Open **http://localhost:8501**.
 
 Run the tests (optional):
 
@@ -52,6 +56,7 @@ Change `SOON_DAYS` in `models.py` to adjust the window.
 
 - Add, edit (dialog) and delete (with confirmation) products
 - Name, category, expiry date, quantity, optional notes, storage location and purchase date
+- Barcode scanning on Add Product (camera or manual entry via `zxing-cpp` and Open Food Facts / Beauty / Products lookup) to prefill name and category; expiry date is never auto-filled
 - Automatic expiry status, with correct handling of items expiring today
 - Overview dashboard: stat cards, Shelf Health Pulse bar, top three Use First items
 - Use First page: Ick Zone, Expiring soon and Upcoming sections, sorted by nearest expiry
@@ -61,13 +66,13 @@ Change `SOON_DAYS` in `models.py` to adjust the window.
 - Validation messages, a past-date warning, and empty states on every page
 - Quick expiry presets (+3 days, +1 week, +1 month, +6 months)
 - Parameterised SQL everywhere, HTML-escaped user text
-- Automated tests for logic, database and page rendering (`tests/`)
+- Automated tests for logic, database, barcode decoding/lookup, and page rendering (`tests/`)
 
 ## Not built yet
 
-- **Expiry-date scanning (OCR):** the Stitch "Scan" card is shown as *Coming soon* and does nothing. Manual entry is the way to add dates.
+- **Expiry-date scanning (OCR):** the Stitch "Scan" card is shown as *Coming soon* and does nothing. Barcode scanning fills product details only; expiry-date OCR is still not built. Manual entry is the way to add dates.
 - **Reminders / push notifications:** not implemented. The notification bell and "remind me 3 days before" text from the Stitch design were left out or marked as not built.
-- **Barcode scanning**, product photo upload, and photo thumbnails: not implemented.
+- Product photo upload and photo thumbnails: not implemented.
 - **History view** for used/tossed items (they are stored with `state = 'used'/'tossed'` but no page shows them yet).
 - Categories are fixed in code (`CATEGORIES` in `models.py`); there is no category editor.
 - Stitch's "Edit" inline row actions and swipe gestures are replaced by buttons under each card.
@@ -82,6 +87,7 @@ Change `SOON_DAYS` in `models.py` to adjust the window.
 ```
 app.py                  entry point: page config, top bar, routing, bottom nav
 lowkeytoki/
+  barcode.py            barcode decoding (zxing-cpp) and Open Food Facts lookup
   models.py             categories, Product, expiry status logic
   validation.py         form validation (errors + warnings)
   db.py                 SQLite schema, CRUD, search, demo data
@@ -89,7 +95,7 @@ lowkeytoki/
   components.py         HTML snippets (cards, stat grid, empty states)
   views.py              one function per page + edit/delete dialogs
   state.py              navigation and flash-message helpers
-tests/                  pytest: logic, database, headless page runs
+tests/                  pytest: logic, database, barcode, headless page runs
 .streamlit/config.toml  theme colours
 data/                   SQLite file lives here (git-ignored)
 ```

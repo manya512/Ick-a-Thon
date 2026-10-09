@@ -11,11 +11,11 @@ CSS = """
 @import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap');
 
 :root {
-  --cream: #FBF6EC; --cream-2: #F3EBDD; --card: #FFFFFF;
-  --matcha: #8C9F32; --matcha-deep: #566500; --matcha-soft: #D7ED76;
-  --lilac: #B9A7FF; --lilac-soft: #E7DEFF; --lilac-deep: #493888;
-  --ink: #201A19; --ink-2: #362F2E; --muted: #464838;
-  --danger: #BA1A1A; --danger-soft: #FFDAD6;
+  --cream: #fff8f6; --cream-2: #f8ebe9; --card: #ffffff;
+  --matcha: #8c9f32; --matcha-deep: #566500; --matcha-soft: #d7ed76;
+  --lilac: #b9a7ff; --lilac-soft: #e7deff; --lilac-deep: #493888;
+  --ink: #201a19; --ink-2: #362f2e; --muted: #464838;
+  --danger: #ba1a1a; --danger-soft: #ffdad6;
 }
 html, body, [class*="st-"], .stApp, input, textarea, button, select { font-family: 'DM Sans', system-ui, sans-serif; }
 .stApp { background: var(--cream); color: var(--ink); }

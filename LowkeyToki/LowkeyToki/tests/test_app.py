@@ -52,3 +52,15 @@ def test_used_button_removes_from_active():
     at = click(at, key)
     assert not at.exception
     assert len(db.list_products()) == n - 1
+
+
+def test_barcode_lookup_prefill(monkeypatch):
+    from lowkeytoki import barcode
+    monkeypatch.setattr(barcode, "lookup_product", lambda code: {"name": "Oat Milk Barista Edition", "brand": "Oatly", "category": "food"})
+    at = run()
+    at = click(at, "nav_add")
+    next(t for t in at.text_input if t.key == "barcode_typed").set_value("7394376616037")
+    at = click(at, "barcode_lookup_btn")
+    assert not at.exception
+    name_input = next(t for t in at.text_input if t.key == "add_name")
+    assert name_input.value == "Oat Milk Barista Edition"

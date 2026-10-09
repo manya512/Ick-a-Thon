@@ -1,0 +1,2022 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/>
+  <meta content="mobile_tab" name="shell-type"/>
+  <title>LowkeyToki 🦠 - Smart Expiry Tracker</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin=""/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,400&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+
+  <style>
+    @layer base {
+      html, body {
+        width: 100vw;
+        margin: 0;
+        padding: 0;
+        font-family: 'DM Sans', system-ui, sans-serif;
+      }
+      body {
+        overscroll-behavior: none;
+      }
+      .pb-safe { padding-bottom: env(safe-area-inset-bottom, 0px); }
+      .pt-safe { padding-top: env(safe-area-inset-top, 0px); }
+      main > :first-child { margin-top: 0 !important; }
+      main > :last-child { margin-bottom: 0 !important; }
+    }
+    ::-webkit-scrollbar { display: none; }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+    @keyframes scanline {
+      0% { top: 0%; }
+      50% { top: 90%; }
+      100% { top: 0%; }
+    }
+    .scanner-laser {
+      position: absolute;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: #bcd05e;
+      box-shadow: 0 0 12px #bcd05e, 0 0 20px #8c9f32;
+      animation: scanline 2.2s ease-in-out infinite;
+    }
+  </style>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            'inverse-on-surface': '#fbeeec',
+            'outline-variant': '#c7c8b3',
+            'on-secondary': '#ffffff',
+            'on-primary': '#ffffff',
+            'surface-variant': '#ece0de',
+            'surface-container-low': '#fef1ef',
+            'surface-container-highest': '#ece0de',
+            'primary-fixed': '#d7ed76',
+            'on-tertiary-container': '#2f2f2a',
+            'on-surface': '#201a19',
+            'tertiary-container': '#989790',
+            'inverse-surface': '#362f2e',
+            'secondary-fixed': '#e7deff',
+            'surface': '#fff8f6',
+            'on-primary-fixed-variant': '#404c00',
+            'on-background': '#201a19',
+            'primary': '#566500',
+            'surface-container-high': '#f2e5e3',
+            'error-container': '#ffdad6',
+            'surface-dim': '#e4d7d5',
+            'outline': '#777966',
+            'inverse-primary': '#bcd05e',
+            'secondary': '#6352a3',
+            'on-tertiary-fixed-variant': '#474742',
+            'on-primary-fixed': '#181e00',
+            'on-error-container': '#93000a',
+            'on-tertiary': '#ffffff',
+            'on-secondary-fixed': '#1e035d',
+            'on-secondary-container': '#493888',
+            'on-surface-variant': '#464838',
+            'surface-bright': '#fff8f6',
+            'tertiary-fixed-dim': '#c8c7bf',
+            'surface-container': '#f8ebe9',
+            'on-tertiary-fixed': '#1b1c17',
+            'secondary-fixed-dim': '#ccbeff',
+            'surface-container-lowest': '#ffffff',
+            'secondary-container': '#b9a7ff',
+            'error': '#ba1a1a',
+            'primary-fixed-dim': '#bcd05e',
+            'background': '#fff8f6',
+            'surface-tint': '#566500',
+            'primary-container': '#8c9f32',
+            'tertiary': '#5f5f59',
+            'tertiary-fixed': '#e4e3db',
+            'on-secondary-fixed-variant': '#4b3989',
+            'on-error': '#ffffff',
+            'on-primary-container': '#2a3200'
+          },
+          borderRadius: {
+            'DEFAULT': '1rem',
+            'lg': '2rem',
+            'xl': '3rem',
+            'full': '9999px'
+          },
+          spacing: {
+            'margin': '1rem',
+            'space-xl': '2.5rem',
+            'margin-tablet': '2rem',
+            'gutter-desktop': '1.5rem',
+            'space-lg': '1.5rem',
+            'space-sm': '0.5rem',
+            'margin-desktop': '3rem',
+            'gutter': '1rem',
+            'space-md': '1rem',
+            'space-xs': '0.25rem'
+          },
+          fontFamily: {
+            'body-lg': ['DM Sans', 'sans-serif'],
+            'label-sm': ['DM Sans', 'sans-serif'],
+            'headline-lg': ['Quicksand', 'sans-serif'],
+            'body-md': ['DM Sans', 'sans-serif'],
+            'headline-md': ['Quicksand', 'sans-serif'],
+            'headline-lg-mobile': ['Quicksand', 'sans-serif'],
+            'display-mobile': ['Quicksand', 'sans-serif'],
+            'title': ['DM Sans', 'sans-serif'],
+            'headline-sm': ['Quicksand', 'sans-serif'],
+            'display': ['Quicksand', 'sans-serif'],
+            'label-md': ['DM Sans', 'sans-serif']
+          },
+          fontSize: {
+            'body-lg': ['16px', { lineHeight: '24px', fontWeight: '400' }],
+            'label-sm': ['11px', { lineHeight: '14px', letterSpacing: '0.04em', fontWeight: '700' }],
+            'headline-lg': ['32px', { lineHeight: '40px', fontWeight: '700' }],
+            'body-md': ['14px', { lineHeight: '20px', fontWeight: '400' }],
+            'headline-md': ['24px', { lineHeight: '32px', fontWeight: '600' }],
+            'headline-lg-mobile': ['26px', { lineHeight: '32px', fontWeight: '700' }],
+            'display-mobile': ['36px', { lineHeight: '44px', fontWeight: '700' }],
+            'title': ['18px', { lineHeight: '24px', fontWeight: '600' }],
+            'headline-sm': ['20px', { lineHeight: '28px', fontWeight: '600' }],
+            'display': ['48px', { lineHeight: '56px', fontWeight: '700' }],
+            'label-md': ['13px', { lineHeight: '18px', letterSpacing: '0.02em', fontWeight: '500' }]
+          }
+        }
+      }
+    };
+  </script>
+</head>
+<body class="bg-surface font-body-md text-on-surface antialiased flex flex-col min-h-screen selection:bg-secondary-container selection:text-on-secondary-container">
+
+  <!-- ========================================================================= -->
+  <!-- MAIN APP TOP HEADER (Fixed) -->
+  <!-- ========================================================================= -->
+  <header class="fixed top-0 inset-x-0 z-40 bg-surface/85 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)] pt-safe">
+    <div class="h-16 px-gutter flex items-center justify-between gap-space-sm max-w-md mx-auto">
+      
+      <!-- Left: Dynamic Brand or Back Button -->
+      <div id="header-brand-block" class="flex items-center gap-space-sm min-w-0">
+        <div class="flex items-center justify-center">
+          <img alt="Profile" class="w-8 h-8 rounded-full object-cover ring-2 ring-surface-variant shadow-sm" src="https://lh3.googleusercontent.com/aida/AEtjO1W_cmuwH4OaCSBD7tE2uCpCQKWV7mEbrsEpnxvCSI10cgARMsZYjGkPePRc6wlfAgUEHmSLkkFKKbFU4sSO6adliM7CorMkKjwLQAmV0qpvwUBoNYOLWkOmSM2LdZxZud-KYWhXWfZ6LbDPeyuG-QmKJP7Kox2fEREiz5J-_yYE9BN4Ea_05o1oK1gKT32dHNh9te5lWjZTP9HVeQAlbtEGakJ7WsWN2jfdR21V3pEiO8HVgdGk2DUkMYbTWejCG-cYvrd9nnMs"/>
+        </div>
+        <div class="flex flex-col min-w-0">
+          <span class="font-headline-sm text-headline-sm text-on-surface tracking-tight truncate leading-none">LowkeyToki</span>
+          <span id="page-subtitle" class="font-label-sm text-label-sm text-on-surface-variant truncate">Overview</span>
+        </div>
+      </div>
+
+      <!-- Add Item Header Back Variant -->
+      <div id="header-back-block" class="hidden items-center gap-space-xs min-w-0">
+        <button aria-label="Back" onclick="historyBack()" class="w-11 h-11 flex items-center justify-center rounded-full text-on-surface hover:bg-surface-container active:scale-95 transition-all">
+          <span class="material-symbols-outlined text-headline-sm">arrow_back_ios_new</span>
+        </button>
+        <h1 class="font-headline-sm text-headline-sm text-on-surface truncate tracking-tight">Add Item</h1>
+      </div>
+
+      <!-- Right: Status Badge & Notification Bell -->
+      <div class="flex items-center gap-space-xs shrink-0">
+        <div id="header-status-pill" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-secondary-fixed text-on-secondary-fixed shadow-xs">
+          <span id="header-status-dot" class="w-2 h-2 rounded-full bg-primary-container animate-pulse"></span>
+          <span id="header-status-text" class="font-label-sm text-label-sm">Fresh</span>
+        </div>
+        <button id="notif-bell-btn" onclick="toggleNotifications()" aria-label="Notifications" class="relative w-11 h-11 flex items-center justify-center rounded-full text-on-surface hover:bg-surface-container transition-colors active:scale-95">
+          <span class="material-symbols-outlined text-title">notifications</span>
+          <span id="notif-bell-dot" class="absolute top-2 right-2 w-2.5 h-2.5 rounded-full bg-error ring-2 ring-surface animate-ping"></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ========================================================================= -->
+  <!-- MAIN APP CONTAINER -->
+  <!-- ========================================================================= -->
+  <main class="flex-1 flex flex-col relative w-full pt-16 pb-24 bg-surface max-w-md mx-auto">
+
+    <!-- ======================================================================= -->
+    <!-- VIEW 1: OVERVIEW -->
+    <!-- ======================================================================= -->
+    <div id="view-overview" class="view-screen w-full px-margin flex flex-col space-y-5 pb-8 pt-2">
+      <!-- Header Intro & Hero Actions -->
+      <section class="flex flex-col space-y-3 pt-2">
+        <div class="flex items-start justify-between gap-2">
+          <div class="flex flex-col">
+            <h1 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface tracking-tight leading-snug">
+              Let's deal with the ick. 🦠
+            </h1>
+            <p class="font-body-md text-body-md text-on-surface-variant mt-0.5">
+              Know what's expiring before it becomes a problem.
+            </p>
+          </div>
+          <div class="w-10 h-10 rounded-full bg-secondary-fixed flex items-center justify-center shrink-0 shadow-sm text-on-secondary-fixed">
+            <span class="material-symbols-outlined text-title" style="font-variation-settings: 'FILL' 1;">biotech</span>
+          </div>
+        </div>
+
+        <!-- Quick Search Pill Input -->
+        <div class="relative w-full">
+          <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-on-surface-variant">
+            <span class="material-symbols-outlined text-title">search</span>
+          </div>
+          <input id="overview-search" oninput="handleOverviewSearch(this.value)" class="w-full bg-surface-container-lowest text-on-surface placeholder:text-on-surface-variant pl-10 pr-4 py-2.5 rounded-full shadow-sm font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-secondary/40 transition-all" placeholder="Search products or categories..." type="search"/>
+        </div>
+
+        <!-- Primary Action Button -->
+        <div class="flex items-center gap-2 pt-1">
+          <button onclick="navigateTo('add-item')" class="flex-1 inline-flex items-center justify-center gap-2 bg-primary-container text-on-primary-container px-5 py-3 rounded-xl font-headline-sm text-headline-sm shadow-md active:scale-95 transition-all cursor-pointer" type="button">
+            <span class="material-symbols-outlined text-headline-sm font-bold">add_circle</span>
+            <span>+ Add Product</span>
+          </button>
+          <button onclick="openBarcodeModal()" aria-label="Scan barcode" class="w-12 h-12 flex items-center justify-center rounded-xl bg-surface-container-high text-on-surface shadow-sm active:scale-95 transition-all cursor-pointer hover:bg-surface-container" type="button">
+            <span class="material-symbols-outlined text-headline-sm">barcode_scanner</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- 2x2 Summary Cards Grid -->
+      <section class="grid grid-cols-2 gap-3">
+        <!-- Card 1: Total Products -->
+        <div onclick="navigateTo('products')" class="cursor-pointer bg-surface-container-lowest p-3.5 rounded-lg shadow-sm flex flex-col justify-between space-y-2 hover:bg-surface-container-low transition-all">
+          <div class="flex items-center justify-between">
+            <span class="font-label-sm text-label-sm text-on-surface-variant">TOTAL INVENTORY</span>
+            <div class="w-7 h-7 rounded-full bg-surface-container flex items-center justify-center text-on-surface">
+              <span class="material-symbols-outlined text-body-md">inventory_2</span>
+            </div>
+          </div>
+          <div>
+            <div id="stat-total" class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface leading-none">24</div>
+            <p class="font-label-md text-label-md text-on-surface-variant mt-0.5">items tracked</p>
+          </div>
+        </div>
+
+        <!-- Card 2: Expiring Soon -->
+        <div onclick="navigateTo('use-first')" class="cursor-pointer bg-secondary-fixed p-3.5 rounded-lg shadow-sm flex flex-col justify-between space-y-2 text-on-secondary-fixed hover:opacity-95 transition-all">
+          <div class="flex items-center justify-between">
+            <span class="font-label-sm text-label-sm text-on-secondary-fixed-variant">EXPIRING SOON</span>
+            <div class="w-7 h-7 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container">
+              <span class="material-symbols-outlined text-body-md" style="font-variation-settings: 'FILL' 1;">timer</span>
+            </div>
+          </div>
+          <div>
+            <div id="stat-soon" class="font-headline-lg-mobile text-headline-lg-mobile text-on-secondary-fixed leading-none">3</div>
+            <p class="font-label-md text-label-md text-on-secondary-fixed-variant mt-0.5">next 72 hours</p>
+          </div>
+        </div>
+
+        <!-- Card 3: Expired — The Ick Zone -->
+        <div onclick="navigateTo('use-first')" class="cursor-pointer bg-inverse-surface p-3.5 rounded-lg shadow-sm flex flex-col justify-between space-y-2 text-inverse-on-surface relative overflow-hidden hover:opacity-95 transition-all">
+          <div class="absolute -right-2 -bottom-2 text-primary-fixed opacity-10 pointer-events-none">
+            <span class="material-symbols-outlined text-display">pest_control</span>
+          </div>
+          <div class="flex items-center justify-between">
+            <span class="font-label-sm text-label-sm text-inverse-primary">THE ICK ZONE</span>
+            <div class="w-7 h-7 rounded-full bg-error flex items-center justify-center text-on-error animate-pulse">
+              <span class="material-symbols-outlined text-body-md">warning</span>
+            </div>
+          </div>
+          <div>
+            <div id="stat-ick" class="font-headline-lg-mobile text-headline-lg-mobile text-inverse-on-surface leading-none">2</div>
+            <p id="stat-ick-sub" class="font-label-sm text-label-sm text-inverse-primary mt-1 font-bold">Needs attention! 🦠</p>
+          </div>
+        </div>
+
+        <!-- Card 4: Fresh & Safe -->
+        <div onclick="filterProductsByStatus('fresh')" class="cursor-pointer bg-surface-container-low p-3.5 rounded-lg shadow-sm flex flex-col justify-between space-y-2 hover:bg-surface-container transition-all">
+          <div class="flex items-center justify-between">
+            <span class="font-label-sm text-label-sm text-on-primary-fixed-variant">FRESH &amp; SAFE</span>
+            <div class="w-7 h-7 rounded-full bg-primary-fixed flex items-center justify-center text-on-primary-fixed">
+              <span class="material-symbols-outlined text-body-md" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+            </div>
+          </div>
+          <div>
+            <div id="stat-fresh" class="font-headline-lg-mobile text-headline-lg-mobile text-primary leading-none">19</div>
+            <p class="font-label-md text-label-md text-on-surface-variant mt-0.5">happy &amp; chill</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Expiry Breakdown Visual Progress Card -->
+      <section class="bg-surface-container-lowest p-4 rounded-lg shadow-sm flex flex-col space-y-3">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-1.5">
+            <span class="font-headline-sm text-headline-sm text-on-surface">Shelf Health Pulse</span>
+            <span class="text-label-sm font-label-sm px-2 py-0.5 rounded-full bg-surface-container text-on-surface-variant">Live</span>
+          </div>
+          <span id="pulse-total-lbl" class="font-label-sm text-label-sm text-on-surface-variant font-bold">Total: 24</span>
+        </div>
+        <!-- Multi-segmented Progress Bar -->
+        <div class="w-full h-3 rounded-full bg-surface-container flex overflow-hidden">
+          <div id="pulse-bar-ick" class="h-full bg-inverse-surface transition-all duration-500" style="width: 8%" title="Expired (8%)"></div>
+          <div id="pulse-bar-soon" class="h-full bg-secondary-container transition-all duration-500" style="width: 12%" title="Expiring Soon (12%)"></div>
+          <div id="pulse-bar-fresh" class="h-full bg-primary-container transition-all duration-500" style="width: 80%" title="Fresh (80%)"></div>
+        </div>
+        <!-- Legend -->
+        <div class="flex items-center justify-between pt-1 text-on-surface-variant">
+          <div class="flex items-center gap-1.5">
+            <span class="w-2.5 h-2.5 rounded-full bg-inverse-surface shrink-0"></span>
+            <span id="legend-ick" class="font-label-sm text-label-sm">8% Ick Zone</span>
+          </div>
+          <div class="flex items-center gap-1.5">
+            <span class="w-2.5 h-2.5 rounded-full bg-secondary-container shrink-0"></span>
+            <span id="legend-soon" class="font-label-sm text-label-sm">12% Urgent</span>
+          </div>
+          <div class="flex items-center gap-1.5">
+            <span class="w-2.5 h-2.5 rounded-full bg-primary-container shrink-0"></span>
+            <span id="legend-fresh" class="font-label-sm text-label-sm">80% Fresh</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- "Use First" Priority List Section -->
+      <section class="flex flex-col space-y-3">
+        <div class="flex items-center justify-between">
+          <div>
+            <h2 class="font-headline-md text-headline-md text-on-surface tracking-tight">Use First</h2>
+            <p class="font-body-md text-body-md text-on-surface-variant">Rescue them before it's too late</p>
+          </div>
+          <button onclick="navigateTo('use-first')" class="inline-flex items-center gap-1 text-secondary font-label-md text-label-md hover:underline font-bold" type="button">
+            <span>View all</span>
+            <span class="material-symbols-outlined text-body-md">arrow_forward</span>
+          </button>
+        </div>
+
+        <!-- Dynamic Rescue Cards Container -->
+        <div id="overview-use-first-list" class="flex flex-col space-y-2.5">
+          <!-- Filled dynamically via JS -->
+        </div>
+      </section>
+
+      <!-- Photo Insight Snack Card -->
+      <section id="snack-card" class="bg-surface-container-low rounded-xl p-3.5 flex items-center gap-3 shadow-sm">
+        <div class="w-14 h-14 rounded-lg overflow-hidden shrink-0 bg-surface-container">
+          <img class="w-full h-full object-cover" alt="Fresh ingredients" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAC9DA5qgNnR3oKuJiG2FplXR8N1zsv4SwzUavHDcg3KFNVFrI7o47MWZ5016lUaoySI1M1lsz3X728PBTVS8yoPNmVohIEPXpScCJoBJ0vXdOSfDuSrwg2lnohIpRQXq39OgSEsUuJ4T9cD8In03oBAvg1S-IP8PGOy2dbjwNdK6wfa6stBDmOm7vuIdSrr-pcTGGT548MnfmP6URSY5MGgbyCvE3Tm_EG_SX6L-sRtPT2mLsQbHg"/>
+        </div>
+        <div class="flex flex-col min-w-0">
+          <span class="font-headline-sm text-headline-sm text-on-surface truncate">Meal prep idea?</span>
+          <p id="snack-text" class="font-body-md text-body-md text-on-surface-variant line-clamp-1">
+            Blend your oat milk &amp; avocados into a quick smoothie bowl today!
+          </p>
+        </div>
+      </section>
+
+      <!-- Playful Microcopy / Mascot Accent at Bottom -->
+      <section class="mt-2 mb-2">
+        <div class="w-full bg-surface-container-high rounded-full py-2.5 px-4 flex items-center justify-center gap-2 shadow-sm text-center">
+          <span class="text-base select-none">🍓</span>
+          <span class="font-label-md text-label-md text-on-surface-variant">
+            Your fridge called. It wants organisation.
+          </span>
+          <span class="inline-block w-1.5 h-1.5 rounded-full bg-secondary-container"></span>
+        </div>
+      </section>
+
+      <!-- Demo Data Utility Controls -->
+      <div class="pt-2 flex items-center justify-between text-xs text-on-surface-variant px-1">
+        <span>LowkeyToki v1.0 • Ick-a-thon</span>
+        <button onclick="resetToDemoData()" class="hover:underline font-bold text-secondary">Reset Demo Data (24 items)</button>
+      </div>
+    </div>
+
+
+    <!-- ======================================================================= -->
+    <!-- VIEW 2: USE FIRST -->
+    <!-- ======================================================================= -->
+    <div id="view-use-first" class="view-screen hidden w-full px-margin flex flex-col pb-8 pt-2">
+      <!-- Friendly Top Banner & Encouraging Lead -->
+      <div class="relative overflow-hidden rounded-lg bg-surface-container-high p-space-md mb-space-md shadow-sm">
+        <div class="flex items-start justify-between gap-space-sm relative z-10">
+          <div class="flex flex-col gap-1 min-w-0">
+            <div class="inline-flex items-center gap-1.5 self-start px-2 py-0.5 rounded-full bg-secondary-fixed text-on-secondary-fixed font-label-sm text-label-sm">
+              <span>Don't let them turn into science experiments! 🧪</span>
+            </div>
+            <h2 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface tracking-tight mt-1">
+              Rescue them before it's too late.
+            </h2>
+            <p class="font-body-md text-body-md text-on-surface-variant">
+              Your nearest expiry dates, all in one place.
+            </p>
+          </div>
+          <!-- Cheeky Spore Mascot Decorator -->
+          <div class="shrink-0 w-12 h-12 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center shadow-md">
+            <span class="material-symbols-outlined text-headline-md" style="font-variation-settings: 'FILL' 1;">biotech</span>
+          </div>
+        </div>
+        <!-- Quick rescue tally sparkline mini-bar -->
+        <div class="mt-space-md pt-space-sm bg-surface/60 rounded-DEFAULT p-space-sm flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-error animate-ping"></span>
+            <span id="uf-ick-tally" class="font-label-md text-label-md text-on-surface font-bold">2 items in Ick Zone</span>
+          </div>
+          <span id="uf-critical-tally" class="font-label-sm text-label-sm text-on-surface-variant">5 critical ahead</span>
+        </div>
+      </div>
+
+      <!-- SECTION 1: Expired — The Ick Zone 🦠 -->
+      <section class="flex flex-col mb-space-lg">
+        <div class="flex items-center justify-between mb-space-sm px-1">
+          <div class="flex items-center gap-2">
+            <span class="font-headline-sm text-headline-sm text-on-surface">Expired — The Ick Zone 🦠</span>
+          </div>
+          <span id="uf-badge-expired" class="px-2 py-0.5 rounded-full bg-error-container text-on-error-container font-label-sm text-label-sm font-bold">2 Urgent</span>
+        </div>
+        <div id="uf-list-expired" class="flex flex-col gap-space-sm">
+          <!-- Populated dynamically via JS -->
+        </div>
+      </section>
+
+      <!-- SECTION 2: Expiring Soon — Review First ⚠️ -->
+      <section class="flex flex-col mb-space-lg">
+        <div class="flex items-center justify-between mb-space-sm px-1">
+          <div class="flex items-center gap-2">
+            <span class="font-headline-sm text-headline-sm text-on-surface">Expiring Soon — Review First ⚠️</span>
+          </div>
+          <span id="uf-badge-soon" class="px-2 py-0.5 rounded-full bg-secondary-fixed text-on-secondary-fixed font-label-sm text-label-sm font-bold">3 Items</span>
+        </div>
+        <div id="uf-list-soon" class="flex flex-col gap-space-sm">
+          <!-- Populated dynamically via JS -->
+        </div>
+      </section>
+
+      <!-- SECTION 3: Upcoming — Keep An Eye Out 👀 -->
+      <section class="flex flex-col mb-space-lg">
+        <div class="flex items-center justify-between mb-space-sm px-1">
+          <div class="flex items-center gap-2">
+            <span class="font-headline-sm text-headline-sm text-on-surface">Upcoming — Keep An Eye Out 👀</span>
+          </div>
+          <span class="px-2 py-0.5 rounded-full bg-primary-fixed text-on-primary-fixed font-label-sm text-label-sm font-bold">Safe Zone</span>
+        </div>
+        <div id="uf-list-upcoming" class="flex flex-col gap-space-sm">
+          <!-- Populated dynamically via JS -->
+        </div>
+      </section>
+
+      <!-- Important Disclaimer Pill -->
+      <div class="relative overflow-hidden rounded-lg bg-surface-container p-space-md mt-space-sm flex items-start gap-3">
+        <span class="material-symbols-outlined text-outline shrink-0 mt-0.5">info</span>
+        <p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+          <strong class="text-on-surface">Note:</strong> Recorded expiry dates are guidelines. Always inspect food condition before consuming.
+        </p>
+      </div>
+    </div>
+
+
+    <!-- ======================================================================= -->
+    <!-- VIEW 3: ADD ITEM -->
+    <!-- ======================================================================= -->
+    <div id="view-add-item" class="view-screen hidden w-full px-margin flex flex-col pb-8 pt-2">
+      <!-- Friendly Subheader & Micro Mascot Toast -->
+      <div class="relative overflow-hidden bg-surface-container-low rounded-lg p-space-md shadow-sm mb-space-md">
+        <div class="flex items-start justify-between gap-space-sm relative z-10">
+          <div class="min-w-0">
+            <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-secondary-container/40 text-on-secondary-container font-label-sm text-label-sm mb-1.5">
+              <span class="w-1.5 h-1.5 rounded-full bg-secondary animate-pulse"></span>
+              Freshness Lab
+            </div>
+            <h2 id="add-form-title" class="font-headline-md text-headline-md text-on-surface leading-snug">Add New Product</h2>
+            <p class="font-body-md text-body-md text-on-surface-variant mt-0.5">Track it before it develops a personality. 🍓</p>
+          </div>
+          <!-- Cute Spore / Strawberry Mascot SVG Badge -->
+          <div class="w-12 h-12 rounded-full bg-surface-container flex items-center justify-center shrink-0 shadow-sm relative">
+            <svg class="w-8 h-8 text-primary" fill="none" viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg">
+              <path d="M18 4C14 4 10 7 8 11C6 15 6 22 9 27C12 32 16 33 18 33C20 33 24 32 27 27C30 22 30 15 28 11C26 7 22 4 18 4Z" fill="#ffdad6"></path>
+              <path d="M18 3V7M14 5L16 8M22 5L20 8" stroke="#566500" stroke-linecap="round" stroke-width="2"></path>
+              <circle cx="14" cy="18" fill="#201a19" r="1.5"></circle>
+              <circle cx="22" cy="18" fill="#201a19" r="1.5"></circle>
+              <path d="M16 22C17 23 19 23 20 22" stroke="#201a19" stroke-linecap="round" stroke-width="1.5"></path>
+              <circle cx="12" cy="13" fill="#ba1a1a" opacity="0.6" r="1"></circle>
+              <circle cx="23" cy="13" fill="#ba1a1a" opacity="0.6" r="1"></circle>
+              <circle cx="18" cy="27" fill="#ba1a1a" opacity="0.6" r="1"></circle>
+            </svg>
+            <span class="absolute -top-1 -right-1 text-xs">✨</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Form Container -->
+      <form id="product-form" class="flex flex-col gap-space-md" onsubmit="handleProductSubmit(event)">
+        <input type="hidden" id="edit-product-id" value=""/>
+
+        <!-- 1. Product Name -->
+        <div class="flex flex-col gap-1.5">
+          <label class="font-title text-title text-on-surface flex items-center justify-between" for="product-name">
+            <span>Product Name <span class="text-error font-body-md">*</span></span>
+            <span class="font-label-sm text-label-sm text-outline">Required</span>
+          </label>
+          <div class="relative">
+            <input class="w-full bg-surface-container-lowest text-on-surface placeholder:text-outline-variant font-body-lg text-body-lg px-4 py-3 rounded-DEFAULT shadow-sm focus:outline-none focus:ring-2 focus:ring-primary transition-all" id="product-name" placeholder="e.g., Oat Milk, Retinol Serum, Ibuprofen" required="" type="text"/>
+            <div class="absolute right-3.5 top-1/2 -translate-y-1/2 text-outline-variant pointer-events-none">
+              <span class="material-symbols-outlined text-headline-sm">edit_note</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. Category Selector -->
+        <div class="flex flex-col gap-2">
+          <span class="font-title text-title text-on-surface">Category</span>
+          <div class="flex flex-wrap gap-2" id="category-chips">
+            <button class="cat-pill px-3.5 py-2 rounded-full font-label-md text-label-md flex items-center gap-1.5 transition-all bg-primary-container text-on-primary-container shadow-sm cursor-pointer" data-cat="food" type="button" onclick="selectFormCategory('food')">
+              <span>🥗</span> Food &amp; Groceries
+            </button>
+            <button class="cat-pill px-3.5 py-2 rounded-full font-label-md text-label-md flex items-center gap-1.5 transition-all bg-surface-container text-on-surface-variant hover:bg-surface-container-high cursor-pointer" data-cat="medicine" type="button" onclick="selectFormCategory('medicine')">
+              <span>💊</span> Medicine
+            </button>
+            <button class="cat-pill px-3.5 py-2 rounded-full font-label-md text-label-md flex items-center gap-1.5 transition-all bg-surface-container text-on-surface-variant hover:bg-surface-container-high cursor-pointer" data-cat="cosmetics" type="button" onclick="selectFormCategory('cosmetics')">
+              <span>✨</span> Cosmetics &amp; Skincare
+            </button>
+            <button class="cat-pill px-3.5 py-2 rounded-full font-label-md text-label-md flex items-center gap-1.5 transition-all bg-surface-container text-on-surface-variant hover:bg-surface-container-high cursor-pointer" data-cat="household" type="button" onclick="selectFormCategory('household')">
+              <span>🧼</span> Household
+            </button>
+            <button class="cat-pill px-3.5 py-2 rounded-full font-label-md text-label-md flex items-center gap-1.5 transition-all bg-surface-container text-on-surface-variant hover:bg-surface-container-high cursor-pointer" data-cat="other" type="button" onclick="selectFormCategory('other')">
+              <span>📦</span> Other
+            </button>
+          </div>
+        </div>
+
+        <!-- 4. Quick Scan OCR Banner (Tactile Delight) -->
+        <div onclick="openOCRModal()" class="relative overflow-hidden bg-secondary-fixed/50 rounded-DEFAULT p-3.5 flex items-center justify-between gap-space-sm cursor-pointer active:scale-[0.99] transition-transform hover:bg-secondary-fixed/70">
+          <div class="flex items-center gap-3 min-w-0">
+            <div class="w-10 h-10 rounded-full bg-secondary text-on-secondary flex items-center justify-center shrink-0 shadow-sm">
+              <span class="material-symbols-outlined text-headline-sm">document_scanner</span>
+            </div>
+            <div class="min-w-0">
+              <div class="flex items-center gap-1.5">
+                <h3 class="font-title text-title text-on-secondary-fixed truncate">Scan Expiry Date</h3>
+                <span class="px-1.5 py-0.5 rounded bg-secondary-container text-on-secondary-container font-label-sm text-label-sm">OCR AI</span>
+              </div>
+              <p class="font-body-md text-body-md text-on-secondary-fixed-variant truncate">Instant detection via camera lens</p>
+            </div>
+          </div>
+          <button class="px-3 py-1.5 rounded-full bg-surface-container-lowest text-secondary font-label-md text-label-md shadow-sm shrink-0 flex items-center gap-1 pointer-events-none" type="button">
+            <span class="material-symbols-outlined text-base">photo_camera</span> Scan
+          </button>
+        </div>
+
+        <!-- 3. Expiry Date Input & Quick Presets -->
+        <div class="flex flex-col gap-2">
+          <label class="font-title text-title text-on-surface flex items-center justify-between" for="expiry-date">
+            <span>Expiry Date <span class="text-error font-body-md">*</span></span>
+            <span class="font-label-sm text-label-sm text-primary font-bold">Auto-remind ON</span>
+          </label>
+          <div class="relative">
+            <div class="absolute left-3.5 top-1/2 -translate-y-1/2 text-primary pointer-events-none">
+              <span class="material-symbols-outlined text-headline-sm">calendar_month</span>
+            </div>
+            <input class="w-full bg-surface-container-lowest text-on-surface font-body-lg text-body-lg pl-11 pr-4 py-3 rounded-DEFAULT shadow-sm focus:outline-none focus:ring-2 focus:ring-primary transition-all" id="expiry-date" required="" type="date"/>
+          </div>
+          <!-- Quick Preset Pills -->
+          <div class="flex items-center gap-1.5 overflow-x-auto py-1 no-scrollbar">
+            <span class="font-label-sm text-label-sm text-outline shrink-0 mr-1">Quick:</span>
+            <button class="px-2.5 py-1.5 rounded-full bg-surface-container font-label-md text-label-md text-on-surface hover:bg-surface-container-high active:scale-95 transition-all shrink-0 cursor-pointer" onclick="addPresetDays(3)" type="button">
+              +3 Days
+            </button>
+            <button class="px-2.5 py-1.5 rounded-full bg-surface-container font-label-md text-label-md text-on-surface hover:bg-surface-container-high active:scale-95 transition-all shrink-0 cursor-pointer" onclick="addPresetDays(7)" type="button">
+              +1 Week
+            </button>
+            <button class="px-2.5 py-1.5 rounded-full bg-surface-container font-label-md text-label-md text-on-surface hover:bg-surface-container-high active:scale-95 transition-all shrink-0 cursor-pointer" onclick="addPresetDays(30)" type="button">
+              +1 Month
+            </button>
+            <button class="px-2.5 py-1.5 rounded-full bg-surface-container font-label-md text-label-md text-on-surface hover:bg-surface-container-high active:scale-95 transition-all shrink-0 cursor-pointer" onclick="addPresetDays(180)" type="button">
+              +6 Months
+            </button>
+          </div>
+        </div>
+
+        <!-- 6. Product Image Upload Dropzone -->
+        <div class="flex flex-col gap-1.5">
+          <span class="font-title text-title text-on-surface">Product Photo</span>
+          <div id="dropzone" class="relative group cursor-pointer bg-surface-container-lowest rounded-DEFAULT p-4 flex flex-col items-center justify-center text-center shadow-sm hover:bg-surface-container-low transition-all">
+            <div id="photo-preview-container" class="hidden mb-2">
+              <img id="photo-preview-img" class="w-20 h-20 rounded-xl object-cover shadow-sm mx-auto" src="" alt="Product preview"/>
+            </div>
+            <div id="photo-placeholder-icon" class="w-14 h-14 rounded-full bg-primary-fixed/40 flex items-center justify-center text-primary mb-2">
+              <span class="material-symbols-outlined text-headline-md">add_a_photo</span>
+            </div>
+            <p id="photo-text-main" class="font-title text-title text-on-surface">Drop photo or tap to snap</p>
+            <p class="font-body-md text-body-md text-on-surface-variant mt-0.5">JPEG, PNG, or WebP up to 10MB</p>
+            <input id="product-photo-input" accept="image/*" aria-label="Upload photo" class="absolute inset-0 opacity-0 cursor-pointer w-full h-full" type="file" onchange="handlePhotoUpload(event)"/>
+          </div>
+        </div>
+
+        <!-- 5. Optional Fields Accordion / Expandable -->
+        <div class="bg-surface-container-low rounded-DEFAULT overflow-hidden shadow-sm transition-all" id="accordion-container">
+          <button aria-expanded="false" class="w-full px-4 py-3.5 flex items-center justify-between text-left focus:outline-none cursor-pointer" id="accordion-trigger" onclick="toggleAccordion()" type="button">
+            <div class="flex items-center gap-2">
+              <span class="material-symbols-outlined text-headline-sm text-secondary">tune</span>
+              <span class="font-title text-title text-on-surface">More Details (Optional)</span>
+            </div>
+            <span class="material-symbols-outlined text-headline-sm text-outline transition-transform duration-200" id="accordion-icon">expand_more</span>
+          </button>
+          <div class="hidden px-4 pb-4 flex flex-col gap-space-md" id="accordion-content">
+            <!-- Purchase Date -->
+            <div class="flex flex-col gap-1">
+              <label class="font-label-md text-label-md text-on-surface" for="purchase-date">Purchase Date</label>
+              <input class="w-full bg-surface-container-lowest text-on-surface font-body-md text-body-md px-3.5 py-2.5 rounded-DEFAULT focus:outline-none shadow-sm" id="purchase-date" type="date"/>
+            </div>
+            <!-- Quantity Stepper Counter -->
+            <div class="flex items-center justify-between bg-surface-container-lowest p-3 rounded-DEFAULT shadow-sm">
+              <div>
+                <p class="font-title text-title text-on-surface">Quantity</p>
+                <p class="font-label-sm text-label-sm text-on-surface-variant">Number of units stored</p>
+              </div>
+              <div class="flex items-center gap-3">
+                <button aria-label="Decrease quantity" class="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-on-surface hover:bg-surface-container-high active:scale-95 transition-all cursor-pointer" onclick="adjustQuantity(-1)" type="button">
+                  <span class="material-symbols-outlined text-title">remove</span>
+                </button>
+                <span class="font-headline-sm text-headline-sm text-on-surface w-6 text-center" id="qty-val">1</span>
+                <button aria-label="Increase quantity" class="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-on-surface hover:bg-surface-container-high active:scale-95 transition-all cursor-pointer" onclick="adjustQuantity(1)" type="button">
+                  <span class="material-symbols-outlined text-title">add</span>
+                </button>
+              </div>
+            </div>
+            <!-- Storage Location Chips -->
+            <div class="flex flex-col gap-1.5">
+              <span class="font-label-md text-label-md text-on-surface">Storage Location</span>
+              <div class="flex flex-wrap gap-2" id="location-chips">
+                <button class="loc-pill px-3 py-1.5 rounded-full font-label-md text-label-md bg-secondary-container text-on-secondary-container shadow-sm transition-all cursor-pointer" data-loc="fridge" type="button" onclick="selectFormLocation('fridge')">
+                  ❄️ Fridge
+                </button>
+                <button class="loc-pill px-3 py-1.5 rounded-full font-label-md text-label-md bg-surface-container-lowest text-on-surface hover:bg-surface-container transition-all cursor-pointer" data-loc="pantry" type="button" onclick="selectFormLocation('pantry')">
+                  🍞 Pantry
+                </button>
+                <button class="loc-pill px-3 py-1.5 rounded-full font-label-md text-label-md bg-surface-container-lowest text-on-surface hover:bg-surface-container transition-all cursor-pointer" data-loc="bathroom" type="button" onclick="selectFormLocation('bathroom')">
+                  🛁 Bathroom cabinet
+                </button>
+                <button class="loc-pill px-3 py-1.5 rounded-full font-label-md text-label-md bg-surface-container-lowest text-on-surface hover:bg-surface-container transition-all cursor-pointer" data-loc="medicine" type="button" onclick="selectFormLocation('medicine')">
+                  🩹 Medicine box
+                </button>
+              </div>
+            </div>
+            <!-- Notes Area -->
+            <div class="flex flex-col gap-1">
+              <label class="font-label-md text-label-md text-on-surface" for="product-notes">Notes</label>
+              <textarea class="w-full bg-surface-container-lowest text-on-surface placeholder:text-outline-variant font-body-md text-body-md p-3 rounded-DEFAULT focus:outline-none shadow-sm resize-none" id="product-notes" placeholder="e.g., opened on Monday, store in cool place" rows="2"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- Validation / Delight Microcopy Badge -->
+        <div class="bg-primary-fixed/30 rounded-DEFAULT p-3 flex items-center gap-2.5">
+          <span class="material-symbols-outlined text-primary text-headline-sm shrink-0">notifications_active</span>
+          <p class="font-body-md text-body-md text-on-primary-fixed-variant leading-snug">
+            <span class="font-bold">LowkeyToki</span> will remind you <span class="underline decoration-primary font-bold">3 days</span> before it expires!
+          </p>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex flex-col gap-2.5 pt-2">
+          <button id="add-save-btn" class="w-full bg-primary-container text-on-primary-container font-headline-sm text-headline-sm py-3.5 px-6 rounded-DEFAULT shadow-md hover:opacity-95 active:scale-[0.99] transition-all flex items-center justify-center gap-2 cursor-pointer" type="submit">
+            <span class="material-symbols-outlined text-headline-sm">check_circle</span>
+            Save Product
+          </button>
+          <button class="w-full bg-surface-container text-on-surface-variant font-title text-title py-3 px-6 rounded-DEFAULT hover:bg-surface-container-high active:scale-[0.99] transition-all cursor-pointer" onclick="historyBack()" type="button">
+            Cancel
+          </button>
+        </div>
+      </form>
+    </div>
+
+
+    <!-- ======================================================================= -->
+    <!-- VIEW 4: PRODUCTS INVENTORY -->
+    <!-- ======================================================================= -->
+    <div id="view-products" class="view-screen hidden w-full px-margin flex flex-col pb-12 pt-2">
+      <!-- Top Stat & Inventory Hero Header -->
+      <section class="flex flex-col gap-space-sm pt-space-xs mb-space-md">
+        <div class="flex items-center justify-between">
+          <div>
+            <h1 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface tracking-tight">Product Inventory</h1>
+            <p id="products-subtitle" class="font-body-md text-body-md text-on-surface-variant">24 monitored household staples &amp; serums</p>
+          </div>
+          <!-- Mini Spore Mascot Avatar -->
+          <div class="relative w-12 h-12 rounded-full bg-secondary-fixed flex items-center justify-center shadow-sm">
+            <span class="material-symbols-outlined text-secondary text-headline-md animate-bounce" style="font-variation-settings: 'FILL' 1;">coronavirus</span>
+            <span id="products-badge-avatar" class="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-error flex items-center justify-center text-on-error font-label-sm text-[9px] font-bold">2</span>
+          </div>
+        </div>
+
+        <!-- Quick Vitality Health Progress Bar -->
+        <div class="bg-surface-container-high rounded-lg p-space-sm shadow-sm flex flex-col gap-1.5 mt-space-xs">
+          <div class="flex items-center justify-between font-label-sm text-label-sm">
+            <span class="text-on-surface-variant flex items-center gap-1">
+              <span class="w-2 h-2 rounded-full bg-primary-container"></span> Shelf Freshness Score
+            </span>
+            <span id="freshness-score-text" class="font-bold text-primary">82% Crisp</span>
+          </div>
+          <div class="w-full h-2.5 bg-surface-container rounded-full overflow-hidden flex">
+            <div id="score-bar-fresh" class="bg-primary-container h-full transition-all duration-500" style="width: 72%;"></div>
+            <div id="score-bar-soon" class="bg-secondary-container h-full transition-all duration-500" style="width: 18%;"></div>
+            <div id="score-bar-ick" class="bg-error h-full transition-all duration-500" style="width: 10%;"></div>
+          </div>
+        </div>
+
+        <!-- Search Input Bar -->
+        <div class="relative mt-space-xs">
+          <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-on-surface-variant">
+            <span class="material-symbols-outlined text-title">search</span>
+          </div>
+          <input class="w-full pl-11 pr-11 py-3 bg-surface-container-lowest text-on-surface font-body-md text-body-md rounded-DEFAULT placeholder:text-outline focus:outline-none shadow-sm focus:shadow-md transition-shadow" id="inventory-search" placeholder="Search tracked items..." type="search" oninput="applyProductFilters()"/>
+          <button aria-label="Clear search" class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-on-surface-variant hover:text-on-surface cursor-pointer" id="clear-search-btn" type="button" onclick="clearProductSearch()">
+            <span class="material-symbols-outlined text-title">cancel</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- Filter & Sort Bar Section -->
+      <section class="flex flex-col gap-space-sm mb-space-md">
+        <!-- Horizontal Category Filter Chips -->
+        <div class="flex items-center gap-space-xs overflow-x-auto no-scrollbar py-0.5 -mx-margin px-margin">
+          <button class="prod-cat-pill shrink-0 px-3.5 py-1.5 rounded-full bg-primary-container text-on-primary-container font-label-sm text-label-sm shadow-sm flex items-center gap-1.5 active:scale-95 transition-transform cursor-pointer" data-cat="all" onclick="filterProductsByCategory('all')">
+            <span class="material-symbols-outlined text-[15px]" style="font-variation-settings: 'FILL' 1;">apps</span>
+            <span id="cat-count-all">All (24)</span>
+          </button>
+          <button class="prod-cat-pill shrink-0 px-3.5 py-1.5 rounded-full bg-surface-container text-on-surface-variant font-label-sm text-label-sm hover:bg-surface-container-high transition-colors flex items-center gap-1.5 cursor-pointer" data-cat="food" onclick="filterProductsByCategory('food')">
+            <span>🍙</span>
+            <span id="cat-count-food">Food (12)</span>
+          </button>
+          <button class="prod-cat-pill shrink-0 px-3.5 py-1.5 rounded-full bg-surface-container text-on-surface-variant font-label-sm text-label-sm hover:bg-surface-container-high transition-colors flex items-center gap-1.5 cursor-pointer" data-cat="medicine" onclick="filterProductsByCategory('medicine')">
+            <span>💊</span>
+            <span id="cat-count-medicine">Medicine (4)</span>
+          </button>
+          <button class="prod-cat-pill shrink-0 px-3.5 py-1.5 rounded-full bg-surface-container text-on-surface-variant font-label-sm text-label-sm hover:bg-surface-container-high transition-colors flex items-center gap-1.5 cursor-pointer" data-cat="cosmetics" onclick="filterProductsByCategory('cosmetics')">
+            <span>✨</span>
+            <span id="cat-count-cosmetics">Skincare (5)</span>
+          </button>
+          <button class="prod-cat-pill shrink-0 px-3.5 py-1.5 rounded-full bg-surface-container text-on-surface-variant font-label-sm text-label-sm hover:bg-surface-container-high transition-colors flex items-center gap-1.5 cursor-pointer" data-cat="household" onclick="filterProductsByCategory('household')">
+            <span>🧼</span>
+            <span id="cat-count-household">Household (3)</span>
+          </button>
+        </div>
+
+        <!-- Status Tabs & Sorter Selector Row -->
+        <div class="flex items-center justify-between gap-space-xs">
+          <div class="flex items-center gap-1 overflow-x-auto no-scrollbar py-1">
+            <button class="status-tab px-3 py-1 rounded-DEFAULT bg-secondary-fixed text-on-secondary-fixed font-label-sm text-label-sm font-bold shadow-xs transition-colors cursor-pointer" data-status="all" onclick="filterProductsByStatus('all')">
+              All
+            </button>
+            <button class="status-tab px-3 py-1 rounded-DEFAULT bg-surface-container text-on-surface-variant font-label-sm text-label-sm hover:bg-surface-container-high transition-colors cursor-pointer" data-status="expired" onclick="filterProductsByStatus('expired')">
+              Ick Zone
+            </button>
+            <button class="status-tab px-3 py-1 rounded-DEFAULT bg-surface-container text-on-surface-variant font-label-sm text-label-sm hover:bg-surface-container-high transition-colors cursor-pointer" data-status="soon" onclick="filterProductsByStatus('soon')">
+              Expiring
+            </button>
+            <button class="status-tab px-3 py-1 rounded-DEFAULT bg-surface-container text-on-surface-variant font-label-sm text-label-sm hover:bg-surface-container-high transition-colors cursor-pointer" data-status="fresh" onclick="filterProductsByStatus('fresh')">
+              Fresh
+            </button>
+          </div>
+
+          <!-- Sort Select -->
+          <div class="shrink-0">
+            <select id="sort-select" onchange="applyProductFilters()" class="bg-surface-container text-on-surface text-label-sm font-label-sm py-1 px-2.5 rounded-DEFAULT border-none focus:outline-none focus:ring-1 focus:ring-primary shadow-xs cursor-pointer">
+              <option value="expiry">Nearest Expiry</option>
+              <option value="name">Name A-Z</option>
+              <option value="added">Recently Added</option>
+            </select>
+          </div>
+        </div>
+      </section>
+
+      <!-- Products List Container -->
+      <section id="products-list-container" class="flex flex-col space-y-2.5">
+        <!-- Rendered via JS -->
+      </section>
+
+      <!-- Empty State -->
+      <div id="products-empty-state" class="hidden text-center py-12 px-4 bg-surface-container-low rounded-xl">
+        <span class="text-4xl">🔍</span>
+        <h3 class="font-headline-md text-headline-md text-on-surface mt-2">No matching goodies!</h3>
+        <p class="font-body-md text-body-md text-on-surface-variant mt-1">Try different search terms or reset the filters.</p>
+        <button onclick="resetProductFilters()" class="mt-4 px-4 py-2 bg-primary-container text-on-primary-container rounded-full font-label-md font-bold shadow-sm">Reset Filters</button>
+      </div>
+    </div>
+
+
+    <!-- ======================================================================= -->
+    <!-- VIEW 5: CATEGORIES -->
+    <!-- ======================================================================= -->
+    <div id="view-categories" class="view-screen hidden w-full px-margin flex flex-col space-y-4 pb-12 pt-2">
+      <div class="flex flex-col">
+        <h1 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface tracking-tight">Categories</h1>
+        <p class="font-body-md text-body-md text-on-surface-variant">Tap one to browse products or inspect freshness.</p>
+      </div>
+
+      <div id="categories-grid" class="flex flex-col space-y-3">
+        <!-- Filled dynamically via JS -->
+      </div>
+    </div>
+
+  </main>
+
+
+  <!-- ========================================================================= -->
+  <!-- BOTTOM FIXED NAVIGATION BAR -->
+  <!-- ========================================================================= -->
+  <nav class="fixed bottom-0 inset-x-0 z-40 pb-safe bg-surface/85 backdrop-blur-xl shadow-[0_-2px_12px_rgba(0,0,0,0.05)]" data-active-classes="text-primary font-bold">
+    <div class="flex justify-around items-center h-20 px-space-xs max-w-md mx-auto">
+      
+      <!-- Tab 1: Overview -->
+      <button onclick="navigateTo('overview')" class="nav-tab flex flex-col items-center justify-center gap-1 min-w-[56px] h-12 rounded-full transition-colors text-primary font-bold cursor-pointer" data-tab="overview">
+        <span class="material-symbols-outlined text-headline-sm">grid_view</span>
+        <span class="font-label-sm text-label-sm">Overview</span>
+      </button>
+
+      <!-- Tab 2: Use First -->
+      <button onclick="navigateTo('use-first')" class="nav-tab flex flex-col items-center justify-center gap-1 min-w-[56px] h-12 rounded-full text-on-surface-variant hover:text-on-surface transition-colors cursor-pointer" data-tab="use-first">
+        <span class="material-symbols-outlined text-headline-sm">local_fire_department</span>
+        <span class="font-label-sm text-label-sm">Use First</span>
+      </button>
+
+      <!-- Tab 3: Add Item (Hero Pop Button) -->
+      <button onclick="navigateToAddItem()" class="flex items-center justify-center cursor-pointer" data-tab="add-item" aria-label="Add product">
+        <div class="flex items-center justify-center w-12 h-12 rounded-full bg-primary-container text-on-primary-container shadow-[2px_3px_0px_#201a19] active:translate-y-0.5 active:translate-x-0.5 transition-all">
+          <span class="material-symbols-outlined text-headline-md font-bold">add</span>
+        </div>
+      </button>
+
+      <!-- Tab 4: Products -->
+      <button onclick="navigateTo('products')" class="nav-tab flex flex-col items-center justify-center gap-1 min-w-[56px] h-12 rounded-full text-on-surface-variant hover:text-on-surface transition-colors cursor-pointer" data-tab="products">
+        <span class="material-symbols-outlined text-headline-sm">inventory_2</span>
+        <span class="font-label-sm text-label-sm">Products</span>
+      </button>
+
+      <!-- Tab 5: Categories -->
+      <button onclick="navigateTo('categories')" class="nav-tab flex flex-col items-center justify-center gap-1 min-w-[56px] h-12 rounded-full text-on-surface-variant hover:text-on-surface transition-colors cursor-pointer" data-tab="categories">
+        <span class="material-symbols-outlined text-headline-sm">category</span>
+        <span class="font-label-sm text-label-sm">Categories</span>
+      </button>
+
+    </div>
+  </nav>
+
+
+  <!-- ========================================================================= -->
+  <!-- MODAL: OCR CAMERA SIMULATOR -->
+  <!-- ========================================================================= -->
+  <div id="ocr-modal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="bg-surface-container-lowest rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl flex flex-col animate-in fade-in zoom-in-95 duration-200">
+      <div class="p-4 bg-inverse-surface text-inverse-on-surface flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <span class="material-symbols-outlined text-inverse-primary">document_scanner</span>
+          <span class="font-headline-sm text-headline-sm">AI Expiry OCR Scanner</span>
+        </div>
+        <button onclick="closeOCRModal()" class="w-8 h-8 rounded-full hover:bg-surface/20 flex items-center justify-center text-inverse-on-surface">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+
+      <!-- Viewfinder Mock -->
+      <div class="relative bg-black h-56 flex items-center justify-center overflow-hidden">
+        <div class="scanner-laser"></div>
+        <div class="border-2 border-dashed border-primary-fixed/80 rounded-xl w-48 h-32 flex flex-col items-center justify-center p-3 text-center pointer-events-none">
+          <span class="text-xs text-white/70">Point camera at date code</span>
+          <span class="text-xs font-mono text-primary-fixed mt-1">EXP: 2026-10-18</span>
+        </div>
+        <div class="absolute bottom-2 text-[10px] text-white/60 tracking-wider">OPTICAL RECOGNITION ACTIVE</div>
+      </div>
+
+      <div class="p-4 flex flex-col gap-3">
+        <p class="font-body-md text-body-md text-on-surface-variant text-center">
+          Simulating real-time packaging character recognition.
+        </p>
+        <button onclick="applyScannedDate(14, 'Oat Milk Barista Edition')" class="w-full py-2.5 bg-primary-container text-on-primary-container font-headline-sm rounded-DEFAULT shadow-sm flex items-center justify-center gap-2 active:scale-95 transition-all">
+          <span class="material-symbols-outlined">auto_awesome</span> Detect Expiry (+2 Weeks)
+        </button>
+        <button onclick="applyScannedDate(3, 'Fresh Produce')" class="w-full py-2 bg-secondary-fixed text-on-secondary-fixed font-title rounded-DEFAULT shadow-xs flex items-center justify-center gap-2 active:scale-95 transition-all">
+          <span class="material-symbols-outlined">timer</span> Detect Short Expiry (+3 Days)
+        </button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ========================================================================= -->
+  <!-- MODAL: BARCODE SCANNER -->
+  <!-- ========================================================================= -->
+  <div id="barcode-modal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="bg-surface-container-lowest rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl flex flex-col">
+      <div class="p-4 bg-surface-container-high flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <span class="material-symbols-outlined text-primary">barcode_scanner</span>
+          <span class="font-headline-sm text-headline-sm">Barcode Scanner</span>
+        </div>
+        <button onclick="closeBarcodeModal()" class="w-8 h-8 rounded-full hover:bg-surface-container flex items-center justify-center text-on-surface">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+
+      <div class="relative bg-zinc-900 h-48 flex items-center justify-center">
+        <div class="scanner-laser"></div>
+        <div class="w-44 h-24 border-2 border-primary-container rounded-lg flex items-center justify-center">
+          <span class="text-xs text-white/70 font-mono tracking-widest">||| | |||| | ||||</span>
+        </div>
+      </div>
+
+      <div class="p-4 flex flex-col gap-2">
+        <p class="font-body-md text-body-md text-on-surface-variant text-center">Tap a preset product to quick-fill:</p>
+        <div class="grid grid-cols-2 gap-2 mt-1">
+          <button onclick="quickAddFromBarcode('Chobani Greek Yogurt', 'food', 5)" class="p-2.5 rounded-DEFAULT bg-surface-container hover:bg-surface-container-high text-left text-xs font-bold transition-all">
+            🥛 Greek Yogurt
+          </button>
+          <button onclick="quickAddFromBarcode('La Roche-Posay SPF 50', 'cosmetics', 180)" class="p-2.5 rounded-DEFAULT bg-surface-container hover:bg-surface-container-high text-left text-xs font-bold transition-all">
+            🧴 SPF 50 Sunscreen
+          </button>
+          <button onclick="quickAddFromBarcode('Advil Liquid Gels', 'medicine', 360)" class="p-2.5 rounded-DEFAULT bg-surface-container hover:bg-surface-container-high text-left text-xs font-bold transition-all">
+            💊 Advil 200mg
+          </button>
+          <button onclick="quickAddFromBarcode('Seventh Generation Detergent', 'household', 200)" class="p-2.5 rounded-DEFAULT bg-surface-container hover:bg-surface-container-high text-left text-xs font-bold transition-all">
+            🧼 Laundry Pods
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ========================================================================= -->
+  <!-- NOTIFICATIONS DRAWER -->
+  <!-- ========================================================================= -->
+  <div id="notif-drawer" class="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs hidden justify-end">
+    <div class="bg-surface-container-lowest w-full max-w-sm h-full shadow-2xl p-4 flex flex-col animate-in slide-in-from-right duration-200">
+      <div class="flex items-center justify-between pb-3 border-b border-surface-variant">
+        <div class="flex items-center gap-2">
+          <span class="material-symbols-outlined text-secondary">notifications</span>
+          <h2 class="font-headline-md text-headline-md text-on-surface">Notifications</h2>
+        </div>
+        <button onclick="toggleNotifications()" class="w-8 h-8 rounded-full hover:bg-surface-container flex items-center justify-center">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+
+      <div id="notif-list" class="flex-1 overflow-y-auto py-3 flex flex-col gap-2.5">
+        <!-- Rendered dynamically -->
+      </div>
+
+      <div class="pt-3 border-t border-surface-variant flex justify-between items-center text-xs text-on-surface-variant">
+        <span>LowkeyToki Shelf Monitor</span>
+        <button onclick="dismissAllNotifs()" class="font-bold text-secondary hover:underline">Mark all read</button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ========================================================================= -->
+  <!-- TOAST NOTIFICATION PILL -->
+  <!-- ========================================================================= -->
+  <div id="toast-pill" class="fixed bottom-24 left-1/2 -translate-x-1/2 px-4 py-2.5 rounded-full bg-on-surface text-surface font-label-md text-label-md shadow-xl pointer-events-none opacity-0 transition-opacity duration-300 z-50 flex items-center gap-2">
+    <span class="material-symbols-outlined text-label-md text-primary-fixed">check_circle</span>
+    <span id="toast-text">Action completed</span>
+  </div>
+
+
+  <!-- ========================================================================= -->
+  <!-- JAVASCRIPT LOGIC & STORE -->
+  <!-- ========================================================================= -->
+  <script>
+    // --- Initial 24 Mock Products with Dates relative to Today ---
+    function makeInitialProducts() {
+      const today = new Date();
+      function offsetDate(days) {
+        const d = new Date(today);
+        d.setDate(d.getDate() + days);
+        const yyyy = d.getFullYear();
+        const mm = String(d.getMonth() + 1).padStart(2, '0');
+        const dd = String(d.getDate()).padStart(2, '0');
+        return `${yyyy}-${mm}-${dd}`;
+      }
+
+      return [
+        { id: 1, name: "Greek Yogurt Tub (500g)", category: "food", expiryDate: offsetDate(-2), quantity: 1, location: "Fridge", notes: "Opened 4 days ago", image: "https://lh3.googleusercontent.com/aida-public/AB6AXuDyubD2jOjWC9w4v_PN7oblT7QobHc6p7KLPoAY5tGx4ZKk9hkHYppM_sJ3WgV_80zGOBdIrS8YBrj2sClryeqpJVNiUvqDi33i22nir33nVgyEvqCeOqV9BoyH49X5jVjl0Qazo79uZ1bS9ExCvMnCUnWcvA9UwQEIkiaeIx4eMl9IYpuV4cdpCeG5nW9CKlP4fb8IJiODF_BmTROxwkDcQws7NCF9ag3DZISZjNFmRXfF-gi_F5w" },
+        { id: 2, name: "Organic Spinach Bag", category: "food", expiryDate: offsetDate(-1), quantity: 1, location: "Fridge", notes: "Leaves wilting", image: "https://lh3.googleusercontent.com/aida-public/AB6AXuAMj7TcU56GCj5939aZsIlA2ZJItp94kGOL-uM7ZLpglCeVcQuu97NB4_dPMKQQ_twIM7147U1cMRrLdTMGP98HK_JgPbuh5HqG-7y5AY4knh2a7E3dOBQlclNLrKI5zejmuuOyo5hJKFmxZhKulP8GshiZW_pywHLN1_H10WK1EGddwkQ9YhAh5H8uo0zpqKR2gPmZLwZwKTJ8wZtA5u5ae2fAAwGVET-1UYa-9edLoGJGyPzxAdY" },
+        { id: 3, name: "Oat Milk Barista Edition", category: "food", expiryDate: offsetDate(0), quantity: 2, location: "Fridge", notes: "Use for latte prep" },
+        { id: 4, name: "Almond Milk", category: "food", expiryDate: offsetDate(1), quantity: 1, location: "Fridge", notes: "Unsweetened" },
+        { id: 5, name: "Vitamin C Glow Serum", category: "cosmetics", expiryDate: offsetDate(2), quantity: 1, location: "Bathroom cabinet", notes: "15% active serum" },
+        { id: 6, name: "Avocado Hass Pack", category: "food", expiryDate: offsetDate(3), quantity: 4, location: "Kitchen", notes: "Ripe & ready" },
+        { id: 7, name: "SPF 50 Daily Sunscreen", category: "cosmetics", expiryDate: offsetDate(3), quantity: 1, location: "Bathroom cabinet", notes: "Broad spectrum" },
+        { id: 8, name: "Eye Drops Lubricant", category: "medicine", expiryDate: offsetDate(4), quantity: 1, location: "Medicine box", notes: "Sterile vials" },
+        { id: 9, name: "Sourdough Bread", category: "food", expiryDate: offsetDate(6), quantity: 1, location: "Pantry", notes: "Artisan loaf" },
+        { id: 10, name: "Pain Relief Ibuprofen", category: "medicine", expiryDate: offsetDate(8), quantity: 1, location: "Medicine box", notes: "200mg capsules" },
+        { id: 11, name: "Fresh Strawberries (400g)", category: "food", expiryDate: offsetDate(4), quantity: 1, location: "Fridge", notes: "Organic farm fresh" },
+        { id: 12, name: "Blueberries Organic", category: "food", expiryDate: offsetDate(5), quantity: 2, location: "Fridge", notes: "Snack bowl ready" },
+        { id: 13, name: "Cold Brew Concentrate", category: "food", expiryDate: offsetDate(7), quantity: 1, location: "Fridge", notes: "Nitro infused" },
+        { id: 14, name: "Tofu Extra Firm", category: "food", expiryDate: offsetDate(10), quantity: 1, location: "Fridge", notes: "Non-GMO" },
+        { id: 15, name: "Free Range Eggs 12pk", category: "food", expiryDate: offsetDate(14), quantity: 1, location: "Fridge", notes: "Grade A Large" },
+        { id: 16, name: "Cheddar Cheese Block", category: "food", expiryDate: offsetDate(25), quantity: 1, location: "Fridge", notes: "Sharp aged" },
+        { id: 17, name: "Hyaluronic Acid Hydrator", category: "cosmetics", expiryDate: offsetDate(30), quantity: 1, location: "Bathroom cabinet", notes: "2% + B5" },
+        { id: 18, name: "Salicylic Acid Cleanser", category: "cosmetics", expiryDate: offsetDate(45), quantity: 1, location: "Bathroom cabinet", notes: "Gentle exfoliating" },
+        { id: 19, name: "Retinol 0.5% Night Cream", category: "cosmetics", expiryDate: offsetDate(90), quantity: 1, location: "Bathroom cabinet", notes: "Store away from light" },
+        { id: 20, name: "Paracetamol 500mg", category: "medicine", expiryDate: offsetDate(60), quantity: 2, location: "Medicine box", notes: "Fever relief" },
+        { id: 21, name: "Antihistamine Allergy Tabs", category: "medicine", expiryDate: offsetDate(120), quantity: 1, location: "Medicine box", notes: "Non-drowsy" },
+        { id: 22, name: "Eco Dishwashing Liquid", category: "household", expiryDate: offsetDate(120), quantity: 1, location: "Kitchen", notes: "Plant-based citrus" },
+        { id: 23, name: "All-Purpose Counter Spray", category: "household", expiryDate: offsetDate(180), quantity: 1, location: "Pantry", notes: "Lavender scent" },
+        { id: 24, name: "Matcha Powder Ceremonial", category: "food", expiryDate: offsetDate(180), quantity: 1, location: "Pantry", notes: "First harvest Uji" }
+      ];
+    }
+
+    // --- State Management ---
+    let products = [];
+    let currentTab = 'overview';
+    let previousTab = 'overview';
+    let selectedFormCategory = 'food';
+    let selectedFormLocation = 'fridge';
+    let currentQty = 1;
+    let selectedPhotoData = null;
+    let activeProductCategoryFilter = 'all';
+    let activeProductStatusFilter = 'all';
+
+    // Categories Meta
+    const CATEGORIES_META = {
+      food: { label: "Food & Groceries", emoji: "🥗", icon: "nutrition" },
+      medicine: { label: "Medicine", emoji: "💊", icon: "medication" },
+      cosmetics: { label: "Cosmetics & Skincare", emoji: "✨", icon: "sanitizer" },
+      household: { label: "Household", emoji: "🧼", icon: "soap" },
+      other: { label: "Other", emoji: "📦", icon: "inventory_2" }
+    };
+
+    // Calculate days until expiry
+    function getDaysLeft(expiryIsoStr) {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const parts = expiryIsoStr.split('-');
+      const exp = new Date(parts[0], parts[1] - 1, parts[2]);
+      exp.setHours(0, 0, 0, 0);
+      const diffMs = exp.getTime() - today.getTime();
+      return Math.round(diffMs / (1000 * 60 * 60 * 24));
+    }
+
+    function getStatus(days) {
+      if (days < 0) return 'expired';
+      if (days <= 3) return 'soon';
+      return 'fresh';
+    }
+
+    function formatDaysBadge(days) {
+      if (days < -1) return `${-days} days ago`;
+      if (days === -1) return `Expired yesterday`;
+      if (days === 0) return `Expires today`;
+      if (days === 1) return `1 day left`;
+      if (days < 60) return `${days} days left`;
+      return `${Math.round(days / 30)} months left`;
+    }
+
+    // Storage persistence
+    async function loadProducts() {
+      try {
+        const res = await fetch('/api/products');
+        if (res.ok) {
+          const data = await res.json();
+          if (Array.isArray(data) && data.length > 0) {
+            products = data;
+            localStorage.setItem('lowkeytoki_products_v1', JSON.stringify(products));
+            renderAll();
+            return;
+          }
+        }
+      } catch (e) {}
+      const saved = localStorage.getItem('lowkeytoki_products_v1');
+      if (saved) {
+        try {
+          products = JSON.parse(saved);
+        } catch (e) {
+          products = makeInitialProducts();
+        }
+      } else {
+        products = makeInitialProducts();
+        saveProducts();
+      }
+      renderAll();
+    }
+
+    function saveProducts() {
+      localStorage.setItem('lowkeytoki_products_v1', JSON.stringify(products));
+      renderAll();
+    }
+
+    async function resetToDemoData() {
+      try {
+        await fetch('/api/reset', { method: 'POST' });
+      } catch (e) {}
+      products = makeInitialProducts();
+      saveProducts();
+      showToast("Reset to 24 demo products!");
+    }
+
+    // --- Navigation Routing ---
+    function navigateTo(tabName) {
+      previousTab = currentTab;
+      currentTab = tabName;
+
+      // Toggle views
+      const views = ['overview', 'use-first', 'add-item', 'products', 'categories'];
+      views.forEach(v => {
+        const el = document.getElementById(`view-${v}`);
+        if (el) el.classList.toggle('hidden', v !== tabName);
+      });
+
+      // Update Header
+      const brandBlock = document.getElementById('header-brand-block');
+      const backBlock = document.getElementById('header-back-block');
+      const subtitle = document.getElementById('page-subtitle');
+
+      if (tabName === 'add-item') {
+        brandBlock.classList.add('hidden');
+        backBlock.classList.remove('hidden');
+        backBlock.classList.add('flex');
+      } else {
+        brandBlock.classList.remove('hidden');
+        backBlock.classList.add('hidden');
+        backBlock.classList.remove('flex');
+        const titles = {
+          'overview': 'Overview',
+          'use-first': 'Use First',
+          'products': 'Products',
+          'categories': 'Categories'
+        };
+        if (subtitle) subtitle.textContent = titles[tabName] || 'Overview';
+      }
+
+      // Update Bottom Nav active state
+      document.querySelectorAll('.nav-tab').forEach(btn => {
+        const t = btn.getAttribute('data-tab');
+        if (t === tabName) {
+          btn.className = 'nav-tab flex flex-col items-center justify-center gap-1 min-w-[56px] h-12 rounded-full transition-colors text-primary font-bold cursor-pointer';
+        } else {
+          btn.className = 'nav-tab flex flex-col items-center justify-center gap-1 min-w-[56px] h-12 rounded-full text-on-surface-variant hover:text-on-surface transition-colors cursor-pointer';
+        }
+      });
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      renderAll();
+    }
+
+    function navigateToAddItem() {
+      resetAddForm();
+      navigateTo('add-item');
+    }
+
+    function historyBack() {
+      navigateTo(previousTab === 'add-item' ? 'overview' : previousTab);
+    }
+
+    // --- Toast helper ---
+    let toastTimer = null;
+    function showToast(msg) {
+      const toast = document.getElementById('toast-pill');
+      const toastText = document.getElementById('toast-text');
+      if (!toast || !toastText) return;
+      toastText.textContent = msg;
+      toast.classList.remove('opacity-0');
+      toast.classList.add('opacity-100');
+      if (toastTimer) clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => {
+        toast.classList.remove('opacity-100');
+        toast.classList.add('opacity-0');
+      }, 2600);
+    }
+
+    // --- Rendering Calculations ---
+    function computeStats() {
+      let expired = 0, soon = 0, fresh = 0;
+      products.forEach(p => {
+        const days = getDaysLeft(p.expiryDate);
+        const st = getStatus(days);
+        if (st === 'expired') expired++;
+        else if (st === 'soon') soon++;
+        else fresh++;
+      });
+      return { total: products.length, expired, soon, fresh };
+    }
+
+    function renderAll() {
+      const stats = computeStats();
+
+      // Header status pill
+      const headText = document.getElementById('header-status-text');
+      const headDot = document.getElementById('header-status-dot');
+      const headPill = document.getElementById('header-status-pill');
+      if (stats.expired > 0) {
+        headText.textContent = `${stats.expired} in Ick Zone`;
+        headDot.className = 'w-2 h-2 rounded-full bg-error animate-pulse';
+        headPill.className = 'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-error-container text-on-error-container shadow-xs';
+      } else {
+        headText.textContent = 'Fresh';
+        headDot.className = 'w-2 h-2 rounded-full bg-primary-container animate-pulse';
+        headPill.className = 'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-secondary-fixed text-on-secondary-fixed shadow-xs';
+      }
+
+      // Bell Dot
+      const notifDot = document.getElementById('notif-bell-dot');
+      if (notifDot) {
+        notifDot.style.display = (stats.expired + stats.soon > 0) ? 'block' : 'none';
+      }
+
+      // Overview 2x2 stats
+      document.getElementById('stat-total').textContent = stats.total;
+      document.getElementById('stat-soon').textContent = stats.soon;
+      document.getElementById('stat-ick').textContent = stats.expired;
+      document.getElementById('stat-fresh').textContent = stats.fresh;
+      document.getElementById('stat-ick-sub').textContent = stats.expired > 0 ? "Needs attention! 🦠" : "All clear! ✨";
+
+      // Shelf Health Pulse
+      const totalSafe = stats.total || 1;
+      const pctIck = Math.round((stats.expired / totalSafe) * 100);
+      const pctSoon = Math.round((stats.soon / totalSafe) * 100);
+      const pctFresh = Math.max(0, 100 - pctIck - pctSoon);
+
+      document.getElementById('pulse-total-lbl').textContent = `Total: ${stats.total}`;
+      document.getElementById('pulse-bar-ick').style.width = `${pctIck}%`;
+      document.getElementById('pulse-bar-soon').style.width = `${pctSoon}%`;
+      document.getElementById('pulse-bar-fresh').style.width = `${pctFresh}%`;
+
+      document.getElementById('legend-ick').textContent = `${pctIck}% Ick Zone`;
+      document.getElementById('legend-soon').textContent = `${pctSoon}% Urgent`;
+      document.getElementById('legend-fresh').textContent = `${pctFresh}% Fresh`;
+
+      // Use First Tallies
+      const ufIck = document.getElementById('uf-ick-tally');
+      if (ufIck) ufIck.textContent = `${stats.expired} item${stats.expired === 1 ? '' : 's'} in Ick Zone`;
+      const ufCrit = document.getElementById('uf-critical-tally');
+      if (ufCrit) ufCrit.textContent = `${stats.expired + stats.soon} critical ahead`;
+      const badgeExp = document.getElementById('uf-badge-expired');
+      if (badgeExp) badgeExp.textContent = `${stats.expired} Urgent`;
+      const badgeSoon = document.getElementById('uf-badge-soon');
+      if (badgeSoon) badgeSoon.textContent = `${stats.soon} Items`;
+
+      // Products screen top header
+      const prodSub = document.getElementById('products-subtitle');
+      if (prodSub) prodSub.textContent = `${stats.total} monitored household staples & serums`;
+      const prodAvatarBadge = document.getElementById('products-badge-avatar');
+      if (prodAvatarBadge) prodAvatarBadge.textContent = stats.expired;
+      
+      const crispPct = Math.round((stats.fresh / totalSafe) * 100);
+      const crispEl = document.getElementById('freshness-score-text');
+      if (crispEl) crispEl.textContent = `${crispPct}% Crisp`;
+      const scoreFresh = document.getElementById('score-bar-fresh');
+      const scoreSoon = document.getElementById('score-bar-soon');
+      const scoreIck = document.getElementById('score-bar-ick');
+      if (scoreFresh) scoreFresh.style.width = `${pctFresh}%`;
+      if (scoreSoon) scoreSoon.style.width = `${pctSoon}%`;
+      if (scoreIck) scoreIck.style.width = `${pctIck}%`;
+
+      // Render Sub-Views
+      renderOverviewRescue();
+      renderUseFirst();
+      renderProductsList();
+      renderCategories();
+      renderCategoryCounters();
+    }
+
+    // --- Overview "Use First" List (Top 3) ---
+    function renderOverviewRescue() {
+      const container = document.getElementById('overview-use-first-list');
+      if (!container) return;
+
+      // Sort by nearest expiry
+      const sorted = [...products].sort((a, b) => getDaysLeft(a.expiryDate) - getDaysLeft(b.expiryDate));
+      const top3 = sorted.slice(0, 3);
+
+      if (top3.length === 0) {
+        container.innerHTML = `
+          <div class="p-6 text-center bg-surface-container-low rounded-lg text-on-surface-variant">
+            <span class="text-3xl">🌱</span>
+            <p class="font-headline-sm mt-2">All clear!</p>
+            <p class="text-xs">Add products and items expiring soon will appear here.</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = top3.map(p => {
+        const days = getDaysLeft(p.expiryDate);
+        const status = getStatus(days);
+        const isExpired = status === 'expired';
+
+        let badgeBg = isExpired ? 'bg-inverse-surface text-inverse-on-surface' : (status === 'soon' ? 'bg-secondary-fixed text-on-secondary-fixed' : 'bg-primary-fixed text-on-primary-fixed');
+        let iconName = isExpired ? 'liquor' : (p.category === 'cosmetics' ? 'sanitizer' : 'nutrition');
+        let iconBg = isExpired ? 'bg-error-container text-on-error-container' : (status === 'soon' ? 'bg-secondary-fixed text-on-secondary-fixed' : 'bg-primary-fixed text-on-primary-fixed');
+        let btnIcon = isExpired ? 'delete_sweep' : 'check';
+        let btnTitle = isExpired ? 'Toss / Mark Consumed' : 'Mark consumed';
+
+        return `
+          <div class="bg-surface-container-lowest p-3.5 rounded-lg shadow-sm flex items-center justify-between gap-3 group transition-transform active:scale-[0.99]" id="ov-row-${p.id}">
+            <div class="flex items-center gap-3 min-w-0">
+              <div class="w-12 h-12 rounded-xl ${iconBg} flex items-center justify-center shrink-0">
+                <span class="material-symbols-outlined text-headline-sm">${iconName}</span>
+              </div>
+              <div class="flex flex-col min-w-0">
+                <span class="font-title text-title text-on-surface truncate">${escapeHtml(p.name)}</span>
+                <div class="flex items-center gap-2 mt-0.5">
+                  <span class="font-label-sm text-label-sm text-on-surface-variant">${escapeHtml(CATEGORIES_META[p.category]?.label.split(' ')[0] || 'Item')}</span>
+                  <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full ${badgeBg} font-label-sm text-label-sm">
+                    ${isExpired ? '<span class="w-1.5 h-1.5 rounded-full bg-error animate-ping"></span>' : ''}
+                    ${formatDaysBadge(days)}
+                  </span>
+                </div>
+              </div>
+            </div>
+            <button onclick="handleQuickConsume(${p.id}, '${escapeHtml(p.name)}')" class="w-9 h-9 rounded-full bg-surface-container hover:bg-primary-container hover:text-on-primary-container text-on-surface flex items-center justify-center shrink-0 transition-colors cursor-pointer" title="${btnTitle}" type="button">
+              <span class="material-symbols-outlined text-title">${btnIcon}</span>
+            </button>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // --- Use First View Breakdown ---
+    function renderUseFirst() {
+      const expiredList = document.getElementById('uf-list-expired');
+      const soonList = document.getElementById('uf-list-soon');
+      const upcomingList = document.getElementById('uf-list-upcoming');
+
+      const sorted = [...products].sort((a, b) => getDaysLeft(a.expiryDate) - getDaysLeft(b.expiryDate));
+      const expired = sorted.filter(p => getStatus(getDaysLeft(p.expiryDate)) === 'expired');
+      const soon = sorted.filter(p => getStatus(getDaysLeft(p.expiryDate)) === 'soon');
+      const upcoming = sorted.filter(p => getDaysLeft(p.expiryDate) > 3 && getDaysLeft(p.expiryDate) <= 14);
+
+      // Section 1: Expired
+      if (expiredList) {
+        if (expired.length === 0) {
+          expiredList.innerHTML = `<div class="p-4 text-center rounded-lg bg-surface-container-low text-on-surface-variant font-label-md">✨ No expired items in the Ick Zone!</div>`;
+        } else {
+          expiredList.innerHTML = expired.map(p => `
+            <div class="relative overflow-hidden rounded-lg bg-inverse-surface text-inverse-on-surface p-space-md shadow-md transition-all duration-300" id="uf-item-${p.id}">
+              <div class="flex gap-space-md items-start">
+                <div class="relative w-16 h-16 shrink-0 rounded-DEFAULT overflow-hidden bg-surface-container-highest">
+                  ${p.image ? `<img class="w-full h-full object-cover" src="${p.image}" alt="${escapeHtml(p.name)}"/>` : `<div class="w-full h-full flex items-center justify-center text-2xl">${CATEGORIES_META[p.category]?.emoji || '📦'}</div>`}
+                  <div class="absolute inset-0 bg-error/20 flex items-center justify-center">
+                    <span class="material-symbols-outlined text-error-container text-headline-sm" style="font-variation-settings: 'FILL' 1;">coronavirus</span>
+                  </div>
+                </div>
+                <div class="flex flex-col flex-1 min-w-0">
+                  <div class="flex items-start justify-between gap-1">
+                    <span class="font-title text-title text-inverse-on-surface leading-tight truncate">${escapeHtml(p.name)}</span>
+                  </div>
+                  <span class="font-label-sm text-label-sm text-surface-variant truncate mt-0.5">${CATEGORIES_META[p.category]?.label || 'General'} • Expired ${Math.abs(getDaysLeft(p.expiryDate))} days ago</span>
+                  <div class="mt-2 flex flex-wrap items-center gap-2">
+                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-error text-on-error font-label-sm text-label-sm font-bold">
+                      <span class="material-symbols-outlined text-label-sm">warning</span>
+                      ${getDaysLeft(p.expiryDate)} days (Ick Alert!)
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <div class="mt-space-md pt-space-xs flex items-center justify-end gap-space-sm">
+                <button class="px-3.5 py-1.5 rounded-full bg-surface-variant text-on-surface-variant font-label-md text-label-md font-bold active:scale-95 transition-transform flex items-center gap-1 cursor-pointer" onclick="removeProductWithAnim('uf-item-${p.id}', ${p.id}, 'Tossed & logged into compost metrics!')">
+                  <span class="material-symbols-outlined text-label-md">delete</span> Toss &amp; Log
+                </button>
+                <button class="px-4 py-1.5 rounded-full bg-primary-container text-on-primary-container font-label-md text-label-md font-bold shadow-sm active:scale-95 transition-transform flex items-center gap-1 cursor-pointer" onclick="removeProductWithAnim('uf-item-${p.id}', ${p.id}, 'Saved just in time!')">
+                  <span class="material-symbols-outlined text-label-md">done_all</span> Mark Used
+                </button>
+              </div>
+            </div>
+          `).join('');
+        }
+      }
+
+      // Section 2: Expiring soon
+      if (soonList) {
+        if (soon.length === 0) {
+          soonList.innerHTML = `<div class="p-4 text-center rounded-lg bg-surface-container-low text-on-surface-variant font-label-md">🎉 Nothing expiring in the next 72 hours!</div>`;
+        } else {
+          soonList.innerHTML = soon.map(p => {
+            const days = getDaysLeft(p.expiryDate);
+            return `
+              <div class="relative overflow-hidden rounded-lg bg-surface-container p-space-md shadow-sm flex items-center justify-between gap-space-sm" id="uf-item-${p.id}">
+                <div class="flex items-center gap-space-sm min-w-0">
+                  <div class="w-12 h-12 shrink-0 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center font-headline-sm">
+                    ${CATEGORIES_META[p.category]?.emoji || '📦'}
+                  </div>
+                  <div class="flex flex-col min-w-0">
+                    <span class="font-title text-title text-on-surface truncate">${escapeHtml(p.name)}</span>
+                    <span class="font-label-sm text-label-sm text-on-surface-variant truncate">${CATEGORIES_META[p.category]?.label || 'Item'} • ${formatDaysBadge(days)}</span>
+                  </div>
+                </div>
+                <div class="flex items-center gap-2">
+                  <span class="shrink-0 px-2.5 py-1 rounded-full bg-secondary-container text-on-secondary-container font-label-sm text-label-sm font-bold">
+                    ${days === 0 ? 'Today!' : `${days}d left`}
+                  </span>
+                  <button onclick="removeProductWithAnim('uf-item-${p.id}', ${p.id}, 'Used up ${escapeHtml(p.name)}!')" class="w-8 h-8 rounded-full bg-surface-container-high hover:bg-primary-container text-on-surface hover:text-on-primary-container flex items-center justify-center transition-colors cursor-pointer" title="Mark Used">
+                    <span class="material-symbols-outlined text-base">check</span>
+                  </button>
+                </div>
+              </div>
+            `;
+          }).join('');
+        }
+      }
+
+      // Section 3: Upcoming
+      if (upcomingList) {
+        if (upcoming.length === 0) {
+          upcomingList.innerHTML = `<div class="p-4 text-center rounded-lg bg-surface-container-low text-on-surface-variant font-label-md">All upcoming items are well within date.</div>`;
+        } else {
+          upcomingList.innerHTML = upcoming.map(p => {
+            const days = getDaysLeft(p.expiryDate);
+            return `
+              <div class="relative overflow-hidden rounded-lg bg-surface-container-low p-space-md shadow-sm flex items-center justify-between gap-space-sm" id="uf-item-${p.id}">
+                <div class="flex items-center gap-space-sm min-w-0">
+                  <div class="w-12 h-12 shrink-0 rounded-full bg-primary-fixed text-on-primary-fixed flex items-center justify-center font-headline-sm">
+                    ${CATEGORIES_META[p.category]?.emoji || '📦'}
+                  </div>
+                  <div class="flex flex-col min-w-0">
+                    <span class="font-title text-title text-on-surface truncate">${escapeHtml(p.name)}</span>
+                    <span class="font-label-sm text-label-sm text-on-surface-variant truncate">${CATEGORIES_META[p.category]?.label || 'Item'} • ${p.location || 'Stored'}</span>
+                  </div>
+                </div>
+                <span class="shrink-0 px-2.5 py-1 rounded-full bg-primary-fixed text-on-primary-fixed-variant font-label-sm text-label-sm font-bold">
+                  ${days} days left
+                </span>
+              </div>
+            `;
+          }).join('');
+        }
+      }
+    }
+
+    // --- Products Inventory View ---
+    function renderProductsList() {
+      const container = document.getElementById('products-list-container');
+      const emptyState = document.getElementById('products-empty-state');
+      if (!container) return;
+
+      const searchVal = (document.getElementById('inventory-search')?.value || '').toLowerCase().trim();
+      const sortVal = document.getElementById('sort-select')?.value || 'expiry';
+
+      let filtered = products.filter(p => {
+        // category filter
+        if (activeProductCategoryFilter !== 'all' && p.category !== activeProductCategoryFilter) return false;
+        // status filter
+        const days = getDaysLeft(p.expiryDate);
+        const status = getStatus(days);
+        if (activeProductStatusFilter !== 'all' && status !== activeProductStatusFilter) return false;
+        // search filter
+        if (searchVal) {
+          const matchName = p.name.toLowerCase().includes(searchVal);
+          const matchNotes = (p.notes || '').toLowerCase().includes(searchVal);
+          const matchLoc = (p.location || '').toLowerCase().includes(searchVal);
+          if (!matchName && !matchNotes && !matchLoc) return false;
+        }
+        return true;
+      });
+
+      // Sort
+      if (sortVal === 'expiry') {
+        filtered.sort((a, b) => getDaysLeft(a.expiryDate) - getDaysLeft(b.expiryDate));
+      } else if (sortVal === 'name') {
+        filtered.sort((a, b) => a.name.localeCompare(b.name));
+      } else if (sortVal === 'added') {
+        filtered.sort((a, b) => b.id - a.id);
+      }
+
+      if (filtered.length === 0) {
+        container.innerHTML = '';
+        if (emptyState) emptyState.classList.remove('hidden');
+        return;
+      }
+
+      if (emptyState) emptyState.classList.add('hidden');
+
+      container.innerHTML = filtered.map(p => {
+        const days = getDaysLeft(p.expiryDate);
+        const status = getStatus(days);
+        const isExpired = status === 'expired';
+
+        let badgeBg = isExpired ? 'bg-error text-on-error' : (status === 'soon' ? 'bg-secondary-container text-on-secondary-container' : 'bg-primary-fixed text-on-primary-fixed');
+        let cardBg = isExpired ? 'bg-inverse-surface text-inverse-on-surface' : 'bg-surface-container-lowest text-on-surface';
+        let subColor = isExpired ? 'text-surface-variant' : 'text-on-surface-variant';
+
+        return `
+          <div class="${cardBg} p-3.5 rounded-lg shadow-sm flex flex-col gap-2 group transition-all" id="prod-card-${p.id}">
+            <div class="flex items-center justify-between gap-3">
+              <div class="flex items-center gap-3 min-w-0">
+                <div class="w-11 h-11 rounded-xl ${isExpired ? 'bg-error/30' : 'bg-surface-container'} flex items-center justify-center shrink-0 text-xl">
+                  ${CATEGORIES_META[p.category]?.emoji || '📦'}
+                </div>
+                <div class="flex flex-col min-w-0">
+                  <span class="font-title text-title truncate">${escapeHtml(p.name)}</span>
+                  <span class="font-label-sm text-label-sm ${subColor} truncate mt-0.5">
+                    ${CATEGORIES_META[p.category]?.label.split(' ')[0] || 'Item'} • ${p.location ? `📍 ${p.location} • ` : ''}x${p.quantity || 1}
+                  </span>
+                </div>
+              </div>
+              <span class="shrink-0 px-2.5 py-1 rounded-full ${badgeBg} font-label-sm text-label-sm font-bold">
+                ${formatDaysBadge(days)}
+              </span>
+            </div>
+
+            ${p.notes ? `<p class="font-body-md text-xs ${subColor} bg-black/5 dark:bg-white/5 rounded-DEFAULT px-2.5 py-1 italic">📝 ${escapeHtml(p.notes)}</p>` : ''}
+
+            <!-- Quick Card Action Bar -->
+            <div class="flex items-center justify-end gap-2 pt-1 border-t border-black/5 dark:border-white/10">
+              <button onclick="editProduct(${p.id})" class="px-2.5 py-1 rounded-full text-xs font-label-md font-bold bg-surface-container hover:bg-surface-container-high text-on-surface flex items-center gap-1 cursor-pointer">
+                <span class="material-symbols-outlined text-[14px]">edit</span> Edit
+              </button>
+              <button onclick="quickConsumeProduct(${p.id}, '${escapeHtml(p.name)}')" class="px-2.5 py-1 rounded-full text-xs font-label-md font-bold bg-primary-container text-on-primary-container flex items-center gap-1 cursor-pointer">
+                <span class="material-symbols-outlined text-[14px]">done</span> Used
+              </button>
+              <button onclick="deleteProductPrompt(${p.id}, '${escapeHtml(p.name)}')" class="px-2.5 py-1 rounded-full text-xs font-label-md font-bold bg-error-container text-on-error-container flex items-center gap-1 cursor-pointer">
+                <span class="material-symbols-outlined text-[14px]">delete</span> Toss
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // --- Categories Overview Screen ---
+    function renderCategories() {
+      const grid = document.getElementById('categories-grid');
+      if (!grid) return;
+
+      grid.innerHTML = Object.entries(CATEGORIES_META).map(([key, meta]) => {
+        const catItems = products.filter(p => p.category === key);
+        let expired = 0, soon = 0;
+        catItems.forEach(p => {
+          const s = getStatus(getDaysLeft(p.expiryDate));
+          if (s === 'expired') expired++;
+          else if (s === 'soon') soon++;
+        });
+
+        let badgeClass = expired > 0 ? 'bg-error text-on-error' : (soon > 0 ? 'bg-secondary-fixed text-on-secondary-fixed' : 'bg-primary-fixed text-on-primary-fixed');
+        let badgeLabel = expired > 0 ? 'Needs attention' : (soon > 0 ? 'Check soon' : 'All good');
+
+        let details = `${catItems.length} item${catItems.length === 1 ? '' : 's'}`;
+        if (expired > 0) details += ` • ${expired} in Ick Zone`;
+        if (soon > 0) details += ` • ${soon} expiring soon`;
+
+        return `
+          <div class="bg-surface-container-lowest p-4 rounded-lg shadow-sm flex items-center justify-between gap-3 group hover:bg-surface-container-low transition-all">
+            <div class="flex items-center gap-3.5 min-w-0">
+              <div class="w-12 h-12 rounded-xl bg-surface-container flex items-center justify-center shrink-0 text-2xl">
+                ${meta.emoji}
+              </div>
+              <div class="flex flex-col min-w-0">
+                <span class="font-title text-title text-on-surface truncate">${meta.label}</span>
+                <span class="font-label-sm text-label-sm text-on-surface-variant truncate mt-0.5">${details}</span>
+              </div>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="px-2.5 py-1 rounded-full ${badgeClass} font-label-sm text-label-sm font-bold shrink-0">
+                ${badgeLabel}
+              </span>
+              <button onclick="browseCategory('${key}')" class="w-9 h-9 rounded-full bg-surface-container hover:bg-secondary-fixed text-on-surface flex items-center justify-center shrink-0 transition-colors cursor-pointer" title="Browse">
+                <span class="material-symbols-outlined text-body-md">arrow_forward</span>
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderCategoryCounters() {
+      const counts = { all: products.length, food: 0, medicine: 0, cosmetics: 0, household: 0 };
+      products.forEach(p => {
+        if (counts[p.category] !== undefined) counts[p.category]++;
+      });
+
+      const cAll = document.getElementById('cat-count-all');
+      if (cAll) cAll.textContent = `All (${counts.all})`;
+      const cFood = document.getElementById('cat-count-food');
+      if (cFood) cFood.textContent = `Food (${counts.food})`;
+      const cMed = document.getElementById('cat-count-medicine');
+      if (cMed) cMed.textContent = `Medicine (${counts.medicine})`;
+      const cCosm = document.getElementById('cat-count-cosmetics');
+      if (cCosm) cCosm.textContent = `Skincare (${counts.cosmetics})`;
+      const cHouse = document.getElementById('cat-count-household');
+      if (cHouse) cHouse.textContent = `Household (${counts.household})`;
+    }
+
+    function browseCategory(catKey) {
+      activeProductCategoryFilter = catKey;
+      document.querySelectorAll('.prod-cat-pill').forEach(btn => {
+        const c = btn.getAttribute('data-cat');
+        if (c === catKey) {
+          btn.className = 'prod-cat-pill shrink-0 px-3.5 py-1.5 rounded-full bg-primary-container text-on-primary-container font-label-sm text-label-sm shadow-sm flex items-center gap-1.5 active:scale-95 transition-transform cursor-pointer';
+        } else {
+          btn.className = 'prod-cat-pill shrink-0 px-3.5 py-1.5 rounded-full bg-surface-container text-on-surface-variant font-label-sm text-label-sm hover:bg-surface-container-high transition-colors flex items-center gap-1.5 cursor-pointer';
+        }
+      });
+      navigateTo('products');
+    }
+
+    // --- Product Filtering Handlers ---
+    function filterProductsByCategory(catKey) {
+      activeProductCategoryFilter = catKey;
+      document.querySelectorAll('.prod-cat-pill').forEach(btn => {
+        const c = btn.getAttribute('data-cat');
+        if (c === catKey) {
+          btn.className = 'prod-cat-pill shrink-0 px-3.5 py-1.5 rounded-full bg-primary-container text-on-primary-container font-label-sm text-label-sm shadow-sm flex items-center gap-1.5 active:scale-95 transition-transform cursor-pointer';
+        } else {
+          btn.className = 'prod-cat-pill shrink-0 px-3.5 py-1.5 rounded-full bg-surface-container text-on-surface-variant font-label-sm text-label-sm hover:bg-surface-container-high transition-colors flex items-center gap-1.5 cursor-pointer';
+        }
+      });
+      renderProductsList();
+    }
+
+    function filterProductsByStatus(statusKey) {
+      activeProductStatusFilter = statusKey;
+      document.querySelectorAll('.status-tab').forEach(btn => {
+        const s = btn.getAttribute('data-status');
+        if (s === statusKey) {
+          btn.className = 'status-tab px-3 py-1 rounded-DEFAULT bg-secondary-fixed text-on-secondary-fixed font-label-sm text-label-sm font-bold shadow-xs transition-colors cursor-pointer';
+        } else {
+          btn.className = 'status-tab px-3 py-1 rounded-DEFAULT bg-surface-container text-on-surface-variant font-label-sm text-label-sm hover:bg-surface-container-high transition-colors cursor-pointer';
+        }
+      });
+      renderProductsList();
+      if (currentTab !== 'products') navigateTo('products');
+    }
+
+    function clearProductSearch() {
+      const inp = document.getElementById('inventory-search');
+      if (inp) inp.value = '';
+      renderProductsList();
+    }
+
+    function resetProductFilters() {
+      clearProductSearch();
+      filterProductsByCategory('all');
+      filterProductsByStatus('all');
+    }
+
+    function applyProductFilters() {
+      renderProductsList();
+    }
+
+    function handleOverviewSearch(val) {
+      if (val.trim()) {
+        const inp = document.getElementById('inventory-search');
+        if (inp) inp.value = val;
+        navigateTo('products');
+      }
+    }
+
+    // --- Item Action Handlers ---
+    function handleQuickConsume(id, name) {
+      fetch(`/api/products/${id}/consume`, { method: 'POST' }).catch(() => {});
+      products = products.filter(p => p.id !== id);
+      saveProducts();
+      showToast(`Logged & consumed: ${name}`);
+    }
+
+    function removeProductWithAnim(elementId, productId, message) {
+      fetch(`/api/products/${productId}/consume`, { method: 'POST' }).catch(() => {});
+      const el = document.getElementById(elementId);
+      if (el) {
+        el.style.opacity = '0';
+        el.style.transform = 'scale(0.95)';
+        setTimeout(() => {
+          products = products.filter(p => p.id !== productId);
+          saveProducts();
+          showToast(message);
+        }, 250);
+      } else {
+        products = products.filter(p => p.id !== productId);
+        saveProducts();
+        showToast(message);
+      }
+    }
+
+    function quickConsumeProduct(id, name) {
+      fetch(`/api/products/${id}/consume`, { method: 'POST' }).catch(() => {});
+      products = products.filter(p => p.id !== id);
+      saveProducts();
+      showToast(`Marked used: ${name}`);
+    }
+
+    function deleteProductPrompt(id, name) {
+      if (confirm(`Remove "${name}" from inventory?`)) {
+        fetch(`/api/products/${id}`, { method: 'DELETE' }).catch(() => {});
+        products = products.filter(p => p.id !== id);
+        saveProducts();
+        showToast(`Tossed: ${name}`);
+      }
+    }
+
+    // --- Add / Edit Form Logic ---
+    function resetAddForm() {
+      document.getElementById('edit-product-id').value = '';
+      document.getElementById('product-name').value = '';
+      document.getElementById('expiry-date').value = '';
+      document.getElementById('purchase-date').value = '';
+      document.getElementById('product-notes').value = '';
+      document.getElementById('add-form-title').textContent = 'Add New Product';
+      document.getElementById('add-save-btn').innerHTML = '<span class="material-symbols-outlined text-headline-sm">check_circle</span> Save Product';
+
+      currentQty = 1;
+      document.getElementById('qty-val').textContent = '1';
+      selectFormCategory('food');
+      selectFormLocation('fridge');
+      selectedPhotoData = null;
+
+      const previewContainer = document.getElementById('photo-preview-container');
+      const placeholderIcon = document.getElementById('photo-placeholder-icon');
+      const photoText = document.getElementById('photo-text-main');
+      if (previewContainer) previewContainer.classList.add('hidden');
+      if (placeholderIcon) placeholderIcon.classList.remove('hidden');
+      if (photoText) photoText.textContent = 'Drop photo or tap to snap';
+
+      // Auto-set preset 7 days
+      addPresetDays(7);
+    }
+
+    function editProduct(id) {
+      const p = products.find(item => item.id === id);
+      if (!p) return;
+
+      navigateTo('add-item');
+      document.getElementById('edit-product-id').value = p.id;
+      document.getElementById('product-name').value = p.name;
+      document.getElementById('expiry-date').value = p.expiryDate;
+      document.getElementById('purchase-date').value = p.purchaseDate || '';
+      document.getElementById('product-notes').value = p.notes || '';
+      document.getElementById('add-form-title').textContent = 'Edit Product';
+      document.getElementById('add-save-btn').innerHTML = '<span class="material-symbols-outlined text-headline-sm">save</span> Update Product';
+
+      currentQty = p.quantity || 1;
+      document.getElementById('qty-val').textContent = currentQty;
+
+      selectFormCategory(p.category || 'food');
+      selectFormLocation(p.location ? p.location.toLowerCase() : 'fridge');
+
+      if (p.image) {
+        selectedPhotoData = p.image;
+        const previewContainer = document.getElementById('photo-preview-container');
+        const previewImg = document.getElementById('photo-preview-img');
+        const placeholderIcon = document.getElementById('photo-placeholder-icon');
+        const photoText = document.getElementById('photo-text-main');
+        if (previewContainer && previewImg) {
+          previewImg.src = p.image;
+          previewContainer.classList.remove('hidden');
+          placeholderIcon.classList.add('hidden');
+          photoText.textContent = 'Change photo';
+        }
+      }
+    }
+
+    function selectFormCategory(cat) {
+      selectedFormCategory = cat;
+      document.querySelectorAll('.cat-pill').forEach(pill => {
+        const c = pill.getAttribute('data-cat');
+        if (c === cat) {
+          pill.className = 'cat-pill px-3.5 py-2 rounded-full font-label-md text-label-md flex items-center gap-1.5 transition-all bg-primary-container text-on-primary-container shadow-sm cursor-pointer';
+        } else {
+          pill.className = 'cat-pill px-3.5 py-2 rounded-full font-label-md text-label-md flex items-center gap-1.5 transition-all bg-surface-container text-on-surface-variant hover:bg-surface-container-high cursor-pointer';
+        }
+      });
+    }
+
+    function selectFormLocation(loc) {
+      selectedFormLocation = loc;
+      document.querySelectorAll('.loc-pill').forEach(pill => {
+        const l = pill.getAttribute('data-loc');
+        if (l === loc) {
+          pill.className = 'loc-pill px-3 py-1.5 rounded-full font-label-md text-label-md bg-secondary-container text-on-secondary-container shadow-sm transition-all cursor-pointer';
+        } else {
+          pill.className = 'loc-pill px-3 py-1.5 rounded-full font-label-md text-label-md bg-surface-container-lowest text-on-surface hover:bg-surface-container transition-all cursor-pointer';
+        }
+      });
+    }
+
+    function addPresetDays(days) {
+      const target = new Date();
+      target.setDate(target.getDate() + days);
+      const yyyy = target.getFullYear();
+      const mm = String(target.getMonth() + 1).padStart(2, '0');
+      const dd = String(target.getDate()).padStart(2, '0');
+      const dateInput = document.getElementById('expiry-date');
+      if (dateInput) {
+        dateInput.value = `${yyyy}-${mm}-${dd}`;
+      }
+    }
+
+    function adjustQuantity(delta) {
+      currentQty = Math.max(1, currentQty + delta);
+      const qtyElem = document.getElementById('qty-val');
+      if (qtyElem) qtyElem.textContent = currentQty;
+    }
+
+    function toggleAccordion() {
+      const content = document.getElementById('accordion-content');
+      const icon = document.getElementById('accordion-icon');
+      const trigger = document.getElementById('accordion-trigger');
+      if (!content || !icon) return;
+      const isHidden = content.classList.contains('hidden');
+      if (isHidden) {
+        content.classList.remove('hidden');
+        icon.style.transform = 'rotate(180deg)';
+        trigger.setAttribute('aria-expanded', 'true');
+      } else {
+        content.classList.add('hidden');
+        icon.style.transform = 'rotate(0deg)';
+        trigger.setAttribute('aria-expanded', 'false');
+      }
+    }
+
+    function handlePhotoUpload(event) {
+      const file = event.target.files?.[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        selectedPhotoData = e.target.result;
+        const previewContainer = document.getElementById('photo-preview-container');
+        const previewImg = document.getElementById('photo-preview-img');
+        const placeholderIcon = document.getElementById('photo-placeholder-icon');
+        const photoText = document.getElementById('photo-text-main');
+        if (previewContainer && previewImg) {
+          previewImg.src = selectedPhotoData;
+          previewContainer.classList.remove('hidden');
+          placeholderIcon.classList.add('hidden');
+          photoText.textContent = file.name;
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function handleProductSubmit(e) {
+      e.preventDefault();
+      const name = document.getElementById('product-name').value.trim();
+      const expiry = document.getElementById('expiry-date').value;
+      const purchase = document.getElementById('purchase-date').value;
+      const notes = document.getElementById('product-notes').value.trim();
+      const editId = document.getElementById('edit-product-id').value;
+
+      if (!name || !expiry) {
+        showToast("Please provide product name and expiry date.");
+        return;
+      }
+
+      const locMap = { fridge: "Fridge", pantry: "Pantry", bathroom: "Bathroom cabinet", medicine: "Medicine box" };
+      const locationName = locMap[selectedFormLocation] || "Fridge";
+
+      if (editId) {
+        // Update existing
+        const pId = parseInt(editId, 10);
+        const idx = products.findIndex(p => p.id === pId);
+        if (idx !== -1) {
+          products[idx].name = name;
+          products[idx].category = selectedFormCategory;
+          products[idx].expiryDate = expiry;
+          products[idx].purchaseDate = purchase;
+          products[idx].quantity = currentQty;
+          products[idx].location = locationName;
+          products[idx].notes = notes;
+          if (selectedPhotoData) products[idx].image = selectedPhotoData;
+        }
+        saveProducts();
+        showToast(`Saved changes to ${name}!`);
+      } else {
+        // Add new
+        const newProduct = {
+          id: Date.now(),
+          name,
+          category: selectedFormCategory,
+          expiryDate: expiry,
+          purchaseDate: purchase,
+          quantity: currentQty,
+          location: locationName,
+          notes,
+          image: selectedPhotoData
+        };
+        products.unshift(newProduct);
+        saveProducts();
+        showToast(`Added ${name} to tracking! 🍓`);
+        fetch('/api/products', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(newProduct)
+        }).catch(() => {});
+      }
+
+      navigateTo('products');
+    }
+
+    // --- OCR & Barcode Modal Logic ---
+    function openOCRModal() {
+      const modal = document.getElementById('ocr-modal');
+      if (modal) {
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+      }
+    }
+
+    function closeOCRModal() {
+      const modal = document.getElementById('ocr-modal');
+      if (modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+      }
+    }
+
+    function applyScannedDate(daysOffset, detectedName) {
+      addPresetDays(daysOffset);
+      const nameInp = document.getElementById('product-name');
+      if (nameInp && !nameInp.value) nameInp.value = detectedName;
+      closeOCRModal();
+      showToast(`OCR Detected: Expiry in ${daysOffset} days!`);
+    }
+
+    function openBarcodeModal() {
+      const modal = document.getElementById('barcode-modal');
+      if (modal) {
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+      }
+    }
+
+    function closeBarcodeModal() {
+      const modal = document.getElementById('barcode-modal');
+      if (modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+      }
+    }
+
+    function quickAddFromBarcode(name, category, daysOffset) {
+      closeBarcodeModal();
+      navigateTo('add-item');
+      document.getElementById('product-name').value = name;
+      selectFormCategory(category);
+      addPresetDays(daysOffset);
+      showToast(`Barcode Scanned: ${name}`);
+    }
+
+    // --- Notifications Drawer ---
+    function toggleNotifications() {
+      const drawer = document.getElementById('notif-drawer');
+      if (!drawer) return;
+      const isHidden = drawer.classList.contains('hidden');
+      if (isHidden) {
+        renderNotifications();
+        drawer.classList.remove('hidden');
+        drawer.classList.add('flex');
+      } else {
+        drawer.classList.add('hidden');
+        drawer.classList.remove('flex');
+      }
+    }
+
+    function renderNotifications() {
+      const list = document.getElementById('notif-list');
+      if (!list) return;
+
+      const urgentItems = products
+        .map(p => ({ p, days: getDaysLeft(p.expiryDate) }))
+        .filter(item => item.days <= 3)
+        .sort((a, b) => a.days - b.days);
+
+      if (urgentItems.length === 0) {
+        list.innerHTML = `
+          <div class="text-center py-8 text-on-surface-variant">
+            <span class="text-3xl">🎉</span>
+            <p class="font-headline-sm mt-2">All clear!</p>
+            <p class="text-xs">No pending expiry alerts.</p>
+          </div>
+        `;
+        return;
+      }
+
+      list.innerHTML = urgentItems.map(({ p, days }) => {
+        const isExp = days < 0;
+        return `
+          <div class="p-3 rounded-lg ${isExp ? 'bg-error-container text-on-error-container' : 'bg-secondary-fixed text-on-secondary-fixed'} flex flex-col gap-1 shadow-xs">
+            <div class="flex items-center justify-between">
+              <span class="font-title text-title truncate">${escapeHtml(p.name)}</span>
+              <span class="text-xs font-bold px-2 py-0.5 rounded-full ${isExp ? 'bg-error text-on-error' : 'bg-secondary-container text-on-secondary-container'}">
+                ${formatDaysBadge(days)}
+              </span>
+            </div>
+            <p class="text-xs opacity-80">${isExp ? 'Needs urgent disposal or check!' : 'Expiring soon — use today or tomorrow.'}</p>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function dismissAllNotifs() {
+      toggleNotifications();
+      showToast("Notifications cleared.");
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    // --- Onload Initialization ---
+    window.addEventListener('DOMContentLoaded', () => {
+      loadProducts();
+      navigateTo('overview');
+    });
+  </script>
+
+</body>
+</html>

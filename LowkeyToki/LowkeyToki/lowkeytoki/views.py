@@ -5,6 +5,7 @@ from datetime import date, timedelta
 
 import streamlit as st
 
+from . import barcode
 from . import components as ui
 from . import db
 from .models import (
@@ -232,6 +233,45 @@ def add_item() -> None:
 
     st.markdown(ui.banner("Freshness Lab", "Add new product", "Track it before it develops a personality. 🍓", "🍓"),
                 unsafe_allow_html=True)
+
+    with st.expander("📷 Scan barcode", expanded=False):
+        cam_img = st.camera_input("Take a photo of barcode", key="barcode_camera")
+        if cam_img is not None:
+            cam_id = getattr(cam_img, "file_id", getattr(cam_img, "name", str(id(cam_img))))
+            if ss.get("_last_barcode_cam_id") != cam_id:
+                ss["_last_barcode_cam_id"] = cam_id
+                code = barcode.decode_barcode(cam_img)
+                if not code:
+                    st.warning("Barcode not detected in the image. Please try again or type the number below.")
+                else:
+                    info = barcode.lookup_product(code)
+                    if info:
+                        ss["add_name"] = info["name"]
+                        ss["add_cat"] = info["category"]
+                        flash(f"Barcode found: {info['name']}. Details prefilled below.")
+                        st.rerun()
+                    else:
+                        if barcode.LAST_ERROR == "network":
+                            st.error("Could not reach product database (no internet). Please enter details manually.")
+                        else:
+                            st.info(f"Product not found for barcode {code}. Please enter details manually.")
+
+        typed_code = st.text_input("Or type barcode number", key="barcode_typed", placeholder="e.g., 7394376616037")
+        if st.button("Look up barcode", key="barcode_lookup_btn"):
+            if typed_code.strip():
+                info = barcode.lookup_product(typed_code.strip())
+                if info:
+                    ss["add_name"] = info["name"]
+                    ss["add_cat"] = info["category"]
+                    flash(f"Barcode found: {info['name']}. Details prefilled below.")
+                    st.rerun()
+                else:
+                    if barcode.LAST_ERROR == "network":
+                        st.error("Could not reach product database (no internet). Please enter details manually.")
+                    else:
+                        st.info(f"Product not found for barcode {typed_code.strip()}. Please enter details manually.")
+            else:
+                st.warning("Please enter a barcode number first.")
 
     st.markdown("<div class='lt-soon-card'><span style='font-size:26px'>📷</span><div>"
                 "<div class='t'>Scan expiry date <span class='lt-chipnote'>COMING SOON</span></div>"

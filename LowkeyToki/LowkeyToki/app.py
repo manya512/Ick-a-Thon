@@ -7,7 +7,7 @@ from lowkeytoki.models import STATUS_EXPIRED, compute_stats
 from lowkeytoki.state import PAGE_TITLES, go, init_state, show_flash
 from lowkeytoki.styles import inject_css
 
-st.set_page_config(page_title="LowkeyToki", page_icon="🦠", layout="centered")
+st.set_page_config(page_title="LowkeyToki", page_icon="assets/logo_icon.png", layout="centered")
 
 db.init_db()
 init_state()

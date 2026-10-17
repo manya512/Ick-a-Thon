@@ -1,7 +1,9 @@
 """Reusable HTML snippets. All user-supplied text is escaped."""
 from __future__ import annotations
 
+import base64
 from html import escape
+from pathlib import Path
 
 from .models import (
     STATUS_EXPIRED, STATUS_FRESH, STATUS_SOON, Product, category_emoji, category_label,
@@ -9,6 +11,19 @@ from .models import (
 )
 
 _CSS_CLASS = {STATUS_EXPIRED: "ick", STATUS_SOON: "soon", STATUS_FRESH: "fresh"}
+_LOGO_URI: str | None = None
+
+
+def _get_logo_uri() -> str:
+    global _LOGO_URI
+    if _LOGO_URI is None:
+        p = Path(__file__).resolve().parent.parent / "assets" / "logo_icon.png"
+        if p.exists():
+            encoded = base64.b64encode(p.read_bytes()).decode("ascii")
+            _LOGO_URI = f"data:image/png;base64,{encoded}"
+        else:
+            _LOGO_URI = ""
+    return _LOGO_URI
 
 
 def one_line(html: str) -> str:
@@ -23,9 +38,11 @@ def top_bar(subtitle: str, ick_count: int) -> str:
         if ick_count
         else '<span class="lt-fresh"><span class="lt-dot"></span>Fresh</span>'
     )
+    logo_src = _get_logo_uri()
     avatar = (
-        '<img alt="Profile" style="width:34px;height:34px;border-radius:50%;object-fit:cover" '
-        'src="https://lh3.googleusercontent.com/aida/AEtjO1W_cmuwH4OaCSBD7tE2uCpCQKWV7mEbrsEpnxvCSI10cgARMsZYjGkPePRc6wlfAgUEHmSLkkFKKbFU4sSO6adliM7CorMkKjwLQAmV0qpvwUBoNYOLWkOmSM2LdZxZud-KYWhXWfZ6LbDPeyuG-QmKJP7Kox2fEREiz5J-_yYE9BN4Ea_05o1oK1gKT32dHNh9te5lWjZTP9HVeQAlbtEGakJ7WsWN2jfdR21V3pEiO8HVgdGk2DUkMYbTWejCG-cYvrd9nnMs"/>'
+        f'<img alt="LowkeyToki Logo" style="width:36px;height:36px;object-fit:contain;display:block" src="{logo_src}"/>'
+        if logo_src
+        else '<span style="font-size:22px">🦠</span>'
     )
     bell = (
         '<div style="position:relative;width:36px;height:36px;display:flex;align-items:center;justify-content:center;border-radius:50%;background:#f2e5e3">'

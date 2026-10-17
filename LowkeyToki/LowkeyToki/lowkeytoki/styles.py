@@ -26,7 +26,7 @@ h1, h2, h3, .lt-display { font-family: 'Quicksand', 'DM Sans', sans-serif !impor
 /* Brand bar */
 .lt-top { display:flex; align-items:center; justify-content:space-between; gap:8px; padding: 4px 0 14px; }
 .lt-brand { display:flex; align-items:center; gap:10px; min-width:0; }
-.lt-logo { width:36px; height:36px; border-radius:50%; background: var(--lilac-soft); display:flex; align-items:center; justify-content:center; font-size:19px; }
+.lt-logo { width:36px; height:36px; border-radius:50%; background: transparent; display:flex; align-items:center; justify-content:center; }
 .lt-brand-name { font-family:'Quicksand',sans-serif; font-weight:700; font-size:20px; line-height:1; color: var(--ink); }
 .lt-brand-sub { font-size:11px; font-weight:700; letter-spacing:.04em; color: var(--muted); margin-top:3px; }
 .lt-fresh { display:inline-flex; align-items:center; gap:6px; padding:5px 11px; border-radius:999px; background: var(--lilac-soft); color:#1E035D; font-size:11px; font-weight:700; }

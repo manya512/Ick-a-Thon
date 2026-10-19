@@ -5,7 +5,7 @@ from datetime import date, timedelta
 
 import streamlit as st
 
-from . import barcode
+from . import barcode, ocr
 from . import components as ui
 from . import db
 from .models import (
@@ -273,10 +273,28 @@ def add_item() -> None:
             else:
                 st.warning("Please enter a barcode number first.")
 
-    st.markdown("<div class='lt-soon-card'><span style='font-size:26px'>📷</span><div>"
-                "<div class='t'>Scan expiry date <span class='lt-chipnote'>COMING SOON</span></div>"
-                "<div class='d'>Scanning isn't built yet. Type the date below.</div></div></div>",
-                unsafe_allow_html=True)
+    with st.expander("🔍 Scan expiry date (AI OCR)", expanded=False):
+        ocr_tab1, ocr_tab2 = st.tabs(["📷 Camera", "📁 Upload photo"])
+        with ocr_tab1:
+            ocr_cam = st.camera_input("Point camera at expiry date code", key="ocr_camera")
+        with ocr_tab2:
+            ocr_file = st.file_uploader("Upload packaging label photo", type=["png", "jpg", "jpeg", "webp"], key="ocr_upload")
+
+        chosen_ocr = ocr_cam or ocr_file
+        if chosen_ocr is not None:
+            ocr_id = getattr(chosen_ocr, "file_id", getattr(chosen_ocr, "name", str(id(chosen_ocr))))
+            if ss.get("_last_ocr_id") != ocr_id:
+                ss["_last_ocr_id"] = ocr_id
+                with st.spinner("Scanning label with OCR..."):
+                    raw_text, detected_date = ocr.scan_expiry_date(chosen_ocr)
+                if detected_date:
+                    ss["add_expiry"] = detected_date
+                    flash(f"OCR Detected: Expiry date {detected_date.strftime('%d %b %Y')}! (Raw: '{raw_text.strip()}')")
+                    st.rerun()
+                elif raw_text.strip():
+                    st.warning(f"Recognized text: '{raw_text.strip()}', but couldn't detect a clear date format. You can select the date manually below.")
+                else:
+                    st.warning("No readable text found in image. Please try closer with good lighting.")
 
     st.caption("Quick expiry presets")
     cols = st.columns(4)

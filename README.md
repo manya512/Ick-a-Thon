@@ -4,7 +4,7 @@ LowkeyToki is a friendly smart expiry tracker for food, medicine, cosmetics, hou
 
 Built for the 3-hour **Ick-a-thon** with a zero-dependency Python server, a responsive single-page UI, and SQLite persistence.
 
-## Run locally
+## Run the main app locally
 
 Requirements: Python 3.9+ and a modern browser. No package installation is required.
 
@@ -15,6 +15,18 @@ python server.py
 Then open <http://localhost:8000/>.
 
 The server serves [index.html](./index.html), creates `data/lowkeytoki.db` automatically, and exposes the small REST API used by the UI. Stop it with `Ctrl+C`.
+
+## Run the Streamlit prototype
+
+The earlier Streamlit version is in `LowkeyToki/LowkeyToki`. To launch it from the repository root in PowerShell:
+
+```powershell
+cd LowkeyToki\LowkeyToki
+python -m pip install -r requirements.txt
+python -m streamlit run app.py
+```
+
+Open <http://localhost:8501/> in your browser. Keep the terminal open while using the app, and press `Ctrl+C` there to stop it. If port 8501 is already in use, Streamlit will report another local URL.
 
 ## What you can do
 

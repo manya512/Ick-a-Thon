@@ -21,11 +21,15 @@ You can also simply double-click or open `index.html` directly in any web browse
 
 ### Option 2: Streamlit App
 
+In PowerShell, change to the Streamlit app directory first:
+
 ```powershell
-pip install -r requirements.txt
-streamlit run app.py
+cd LowkeyToki\LowkeyToki
+python -m pip install -r requirements.txt
+python -m streamlit run app.py
 ```
-Open **http://localhost:8501**.
+
+If you are already in this directory, skip the `cd` command. Keep the terminal open and visit **http://localhost:8501** in your browser. Stop the app with `Ctrl+C` in the terminal.
 
 Run the tests (optional):
 
